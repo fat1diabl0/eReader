@@ -5,6 +5,8 @@ import cv2
 import time
 import threading
 from models import WebcamFeed
+from ImportScreen import *
+from collections import OrderedDict
 
 class CameraWindow( wx.Dialog ):
     def __init__( self, par ):
@@ -77,7 +79,7 @@ class CameraWindow( wx.Dialog ):
         self.Layout( )
 
         """ Bind a custom close event (needed for Windows) """
-        self.Bind(wx.EVT_CLOSE, self.Close)        
+        #self.Bind(wx.EVT_CLOSE, self.onClose)        
 
     def StartLiveWebcamFeed( self ):
         self.objWebCamFeed = WebcamFeed()
@@ -142,29 +144,26 @@ class CameraWindow( wx.Dialog ):
         for t in lstThread:
             if t.name == "TimerThread":
                 t.cancel()
-                break      
+                break   
+        cv2.destroyAllWindows()
+        self.objWebCamFeed.release()                
+        self.EndModal(1)  
+        self.Destroy()       
 
     #put here the code for button "Set Timer"
     def SetTimer( self, evt ):
         dlg = TimerDialog(self,self.objWebCamFeed)
-        dlg.ShowModal()
+        dlg.Show()
         	
-
     def onClose( self, evt ):
-        print("onClose")
         cv2.destroyAllWindows()
         self.objWebCamFeed.release()
-        self.Destroy()
-
-    def Close( self, evt ):
-        self.Done(evt)
-        cv2.destroyAllWindows()
-        self.objWebCamFeed.release()
+        self.EndModal(0)
         self.Destroy()
 
 class TimerDialog( wx.Dialog ):
     def __init__( self, parent, objCam):
-        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition,style = wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX )
+        wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = wx.EmptyString, pos = wx.DefaultPosition,style = wx.DEFAULT_FRAME_STYLE|wx.MINIMIZE_BOX|wx.FRAME_FLOAT_ON_PARENT )
         
         self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
         self.SetMaxSize( wx.Size(250,110) )
@@ -242,6 +241,21 @@ def GetNewImageName():
         return 1
     else:
         return max(lstFiles) + 1
+
+def GetAllImageFiles():
+    workDir = os.path.join(os.getcwd(),"pics")
+
+    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+
+    d = OrderedDict()
+
+    for p in lstAllPNGFiles:
+        imgName = p.split('.')[0]
+        imgFullPath = os.path.join(workDir,p)
+        if imgName not in d.keys():
+            d[imgName] = imgFullPath
+
+    return d
 
 if __name__ == '__main__':
     app = wx.App(False)
