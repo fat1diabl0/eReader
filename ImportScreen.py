@@ -10,7 +10,7 @@ except ImportError: # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.gradientbutton as GB
 
 class ImportWindow( wx.Dialog ):
-    def __init__( self, par ):
+    def __init__( self, par):
         wx.Dialog.__init__(self, par, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX  )
         self.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
         size = wx.Display( ).GetClientArea( )
@@ -21,7 +21,9 @@ class ImportWindow( wx.Dialog ):
         self.icons_folder = os.path.join( os.getcwd( ), 'Assets' )
         self.html_folder = os.path.join( os.getcwd( ), 'test_html' )
         self.min_width_menu = 250
+        self.dictImgOCRData = par.dictImgOCR
         self.BuildInterface( )
+
 
     def BuildInterface( self ):
         main_sizer = wx.BoxSizer( wx.HORIZONTAL )
@@ -36,29 +38,24 @@ class ImportWindow( wx.Dialog ):
         #wx.html widget
         self.html_widget = wx.html2.WebView.New( html_panel, style = wx.BORDER_NONE )
         self.html_widget.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
-        #self.html_widget = wx.html.HtmlWindow( html_panel )
-        self.html_widget.SetPage('<html><body style="background-color: rgb( 224, 224, 224 )">Hello, world!</body></html>', 'some_url')
-        #self.html_widget.SetPage("<html><body>Hello, world!</body></html>" )
         html_panel_sizer.Add( self.html_widget, 1, wx.EXPAND )
         html_panel.SetSizer( html_panel_sizer )
 
         #html pager with buttons to different html content
         html_pager_sizer = wx.BoxSizer( wx.HORIZONTAL )
-        buttons = [
-            { 'label' : 'Page 1', 'html_file_name' : 'page1.html' },
-            { 'label' : 'Page 2', 'html_file_name' : 'page2.html' },
-            { 'label' : 'Page 3', 'html_file_name' : 'page3.html' },
-            { 'label' : 'Page 4', 'html_file_name' : 'page4.html' },
-            { 'label' : 'Page 5', 'html_file_name' : 'page5.html' },
-            { 'label' : 'Page 6', 'html_file_name' : 'page6.html' },
-            { 'label' : 'Page 7', 'html_file_name' : 'page7.html' }
-        ]
-        for btn in buttons:
-            label_btn = btn[ 'label' ]
-            html_file = btn[ 'html_file_name' ]
-            html_btn = GB.GradientButton( html_panel, -1, label=label_btn, name=html_file )
+
+        for key in self.dictImgOCRData.keys():
+            label_btn = key
+            html_btn = GB.GradientButton( html_panel, -1, label=label_btn, name=label_btn)
             html_btn.Bind( wx.EVT_BUTTON, self.ChangeHtmlContent )
             html_pager_sizer.Add( html_btn, 0, wx.RIGHT, 20 )
+
+        # To Click on first button initially
+        if len(self.dictImgOCRData.keys()) > 0:
+            btnName = list(self.dictImgOCRData.keys())[0]
+            html = '<html><body style="background-color: rgb( 224, 224, 224 )"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+            self.html_widget.SetPage( html, '' )
+
         html_panel_sizer.Add( html_pager_sizer, 0, wx.ALL, 20 )
 
         #menu with buttons
@@ -110,14 +107,9 @@ class ImportWindow( wx.Dialog ):
 
     def ChangeHtmlContent( self, evt ):
         btn = evt.GetEventObject( );
-        name = btn.GetName( )
-        html_file_path = os.path.join( self.html_folder, name )
-        if os.path.exists( html_file_path ):
-            with open( html_file_path ) as f:
-                html = f.read( )
-                url = html_file_path.partition( '.' )[ 0 ]
-                self.html_widget.SetPage( html, url )
-        # wx.MessageBox( name )
+        btnName = btn.GetName( )
+        html = '<html><body style="background-color: rgb( 224, 224, 224 )"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+        self.html_widget.SetPage( html, '' )
 
     #code for export text. Export wx.html2 area file.
     def ExportText( self, evt ):
@@ -137,5 +129,5 @@ class ImportWindow( wx.Dialog ):
         wx.MessageBox( 'Settings Button' )
 
     def OnClose( self, evt ):
-        self.EndModal( -1 )
+        #self.EndModal( -1 )
         self.Destroy( )
