@@ -3,7 +3,10 @@
 import wx, os
 from CameraScreen import *
 from ImportScreen import *
-#from backend import googleOCR
+from backend import googleOCR
+from collections import OrderedDict
+import threading
+
 class MainFrame( wx.Frame ):
     #Window with 2 buttons
     def __init__( self ):
@@ -69,7 +72,6 @@ class MainFrame( wx.Frame ):
         elif menu_id == wx.ID_HELP:
             wx.MessageBox( 'Help' )
 
-
     def BuildInterface( self ):
         panel = wx.Panel( self, -1 )
         main_sizer = wx.BoxSizer( wx.VERTICAL )
@@ -81,6 +83,9 @@ class MainFrame( wx.Frame ):
         vsizer.Add(hsizer, 0, wx.CENTER | wx.EXPAND, 15)
         vsizer.AddStretchSpacer(1)
         hsizer.AddStretchSpacer(1)
+
+        # self.gauge = wx.Gauge(panel, range = 20, size = (500, 25), style = wx.GA_HORIZONTAL)
+        # vsizer.Add(self.gauge)
 
         img = wx.Image( os.path.join( os.getcwd( ), 'Assets', 'Camera Icon.png' ), wx.BITMAP_TYPE_PNG )
         bmp = img.ConvertToBitmap( )
@@ -127,32 +132,62 @@ class MainFrame( wx.Frame ):
         #self.Bind( wx.EVT_SIZE, self.OnResize )
         #self.Fit( )
 
-
     #click on button "Camera"
     def OnCameraBtnClick( self, evt ):
         dlg = CameraWindow( self )
         dlg.Maximize( )
-        dlg.ShowModal( )
-        #dlg.Destroy( )
+        res = dlg.ShowModal( )
+        
+        if res:
+            wx.MessageBox(message='OCR Processing',caption='Envision Reader',style=wx.OK | wx.ICON_INFORMATION)                   
+            self.dictImgOCR = GetAllImageFiles()
+            dlg = ImportWindow( self )
+            dlg.Maximize( )
+            dlg.Show( )        
 
     #put here code for button "Import"
     def OnImportBtnClick( self, evt ):
         img_wildcard = "PNG and GPG files (*.png;*.jpg)|*.png;*.jpg"
-        image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST )
+        image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
         if image_dlg.ShowModal( ) == wx.ID_OK:
-            img_path = image_dlg.GetPath( )
+            lstImgPath = image_dlg.GetPaths( )
+            
+            wx.MessageBox(message='OCR Processing',caption='Envision Reader',style=wx.OK | wx.ICON_INFORMATION)
             #perform Google OCR
-           # print(googleOCR.performGoogleOCR(img_path))
+            self.dictImgOCR = OrderedDict()
+            for img in lstImgPath:
+                imgOCRText = googleOCR.performGoogleOCR(img)
+                #print(imgOCRText)
+                imgName = os.path.splitext(os.path.basename(img))[0]
+                self.dictImgOCR[imgName] = imgOCRText
+
             dlg = ImportWindow( self )
             dlg.Maximize( )
             dlg.ShowModal( )
+        
         image_dlg.Destroy( )
 
     def OnResize( self, evt ):
         self.Layout( )
         self.Refresh( )
 
+def GetAllImageFiles():
 
+    d = OrderedDict()
+
+    workDir = os.path.join(os.getcwd(),"pics")
+
+    if os.path.exists(workDir):
+        lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+        #print(lstAllPNGFiles)
+        for p in lstAllPNGFiles:
+            imgName = p.split('.')[0]
+            imgFullPath = os.path.join(workDir,p)
+            if imgName not in d.keys():
+                imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                d[imgName] = imgOCRText
+
+    return d
 
 # Run the program
 if __name__ == "__main__":
@@ -162,7 +197,3 @@ if __name__ == "__main__":
     frame.Maximize( )
     frame.Show()
     app.MainLoop()
-
-
-
-
