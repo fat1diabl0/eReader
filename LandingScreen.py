@@ -84,9 +84,6 @@ class MainFrame( wx.Frame ):
         vsizer.AddStretchSpacer(1)
         hsizer.AddStretchSpacer(1)
 
-        # self.gauge = wx.Gauge(panel, range = 20, size = (500, 25), style = wx.GA_HORIZONTAL)
-        # vsizer.Add(self.gauge)
-
         img = wx.Image( os.path.join( os.getcwd( ), 'Assets', 'Camera Icon.png' ), wx.BITMAP_TYPE_PNG )
         bmp = img.ConvertToBitmap( )
         btn_camera = wx.BitmapButton( panel, -1, bmp, style=wx.NO_BORDER )
@@ -122,6 +119,11 @@ class MainFrame( wx.Frame ):
         btn_import_sizer.Add( btn_import_text, 0, wx.TOP | wx.ALIGN_CENTER, 5 )
         hsizer.Add( btn_import_sizer, 0, wx.ALL , 30)
 
+        self.gauge_sizer = wx.BoxSizer( wx.VERTICAL )
+        self.gauge = wx.Gauge(panel, range = 100, size = (400, 25), style = wx.GA_HORIZONTAL)
+        self.gauge_sizer.Add( self.gauge, 0, wx.ALL|wx.ALIGN_CENTRE , 5 )        
+        vsizer.Add( self.gauge_sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 30)
+
         #hsizer.Add( btn_import, 0, wx.ALL , 30 )
 
         hsizer.AddStretchSpacer(1)
@@ -139,8 +141,7 @@ class MainFrame( wx.Frame ):
         res = dlg.ShowModal( )
         
         if res:
-            wx.MessageBox(message='OCR Processing',caption='Envision Reader',style=wx.OK | wx.ICON_INFORMATION)                   
-            self.dictImgOCR = GetAllImageFiles()
+            self.dictImgOCR = self.GetAllImageFiles()
             dlg = ImportWindow( self )
             dlg.Maximize( )
             dlg.Show( )        
@@ -151,11 +152,15 @@ class MainFrame( wx.Frame ):
         image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
         if image_dlg.ShowModal( ) == wx.ID_OK:
             lstImgPath = image_dlg.GetPaths( )
-            
-            wx.MessageBox(message='OCR Processing',caption='Envision Reader',style=wx.OK | wx.ICON_INFORMATION)
+
             #perform Google OCR
             self.dictImgOCR = OrderedDict()
+
+            max_count = 100 / len(lstImgPath)
+            val = 0
             for img in lstImgPath:
+                val = val + max_count
+                self.gauge.SetValue(val)
                 imgOCRText = googleOCR.performGoogleOCR(img)
                 #print(imgOCRText)
                 imgName = os.path.splitext(os.path.basename(img))[0]
@@ -167,27 +172,37 @@ class MainFrame( wx.Frame ):
         
         image_dlg.Destroy( )
 
+        self.gauge.SetValue(0)
+
     def OnResize( self, evt ):
         self.Layout( )
         self.Refresh( )
 
-def GetAllImageFiles():
+    def GetAllImageFiles(self):
 
-    d = OrderedDict()
+        d = OrderedDict()
 
-    workDir = os.path.join(os.getcwd(),"pics")
+        workDir = os.path.join(os.getcwd(),"pics")
 
-    if os.path.exists(workDir):
-        lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
-        #print(lstAllPNGFiles)
-        for p in lstAllPNGFiles:
-            imgName = p.split('.')[0]
-            imgFullPath = os.path.join(workDir,p)
-            if imgName not in d.keys():
-                imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
-                d[imgName] = imgOCRText
+        if os.path.exists(workDir):
+            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
 
-    return d
+
+            if(len(lstAllPNGFiles) > 0):
+                max_count = 100 / len(lstAllPNGFiles)
+                val = 0
+                
+                for p in lstAllPNGFiles:
+                    val = val + max_count
+                    self.gauge.SetValue(val)
+                    imgName = p.split('.')[0]
+                    imgFullPath = os.path.join(workDir,p)
+                    if imgName not in d.keys():
+                        imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                        d[imgName] = imgOCRText
+
+                self.gauge.SetValue(0)
+        return d
 
 # Run the program
 if __name__ == "__main__":
