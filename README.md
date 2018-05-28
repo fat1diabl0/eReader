@@ -14,3 +14,15 @@
 * Font Size - Change font size. use standard system setup.
 * Font Color - changing font color should reflect in the output in wxhtml area
 * Save captured images? - keep the images taken during camera mode instead of deleting them after they're done. Overwrite existing photos. 
+
+## Default values for all of them
+* Camera List - USB Camera
+* Font - Helvetica
+* Font size - 24px
+* Font color - black
+* save images? - no
+
+## Priority List
+* Settings page
+* Option to import PDFs and do OCR. 
+
