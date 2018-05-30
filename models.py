@@ -9,8 +9,8 @@ Feed class to bridge openCV with WXPython native UI.
 class WebcamFeed(object):
     
     """ Starts a webcam feed """
-    def __init__(self):
-        self.webcam = cv2.VideoCapture(0)
+    def __init__(self,camID):
+        self.webcam = cv2.VideoCapture(camID)
 		
     """ Determines if the webcam is available """
     def has_webcam(self):
