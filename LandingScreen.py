@@ -6,6 +6,8 @@ from ImportScreen import *
 from backend import googleOCR
 from collections import OrderedDict
 import threading
+import shutil
+import SettingsData
 
 class MainFrame( wx.Frame ):
     #Window with 2 buttons
@@ -144,7 +146,7 @@ class MainFrame( wx.Frame ):
             self.dictImgOCR = self.GetAllImageFiles()
             dlg = ImportWindow( self )
             dlg.Maximize( )
-            dlg.Show( )        
+            dlg.ShowModal( )        
 
     #put here code for button "Import"
     def OnImportBtnClick( self, evt ):
@@ -187,7 +189,6 @@ class MainFrame( wx.Frame ):
         if os.path.exists(workDir):
             lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
 
-
             if(len(lstAllPNGFiles) > 0):
                 max_count = 100 / len(lstAllPNGFiles)
                 val = 0
@@ -202,6 +203,10 @@ class MainFrame( wx.Frame ):
                         d[imgName] = imgOCRText
 
                 self.gauge.SetValue(0)
+
+            if SettingsData.IsSaveImages == "No":
+                shutil.rmtree(workDir)
+
         return d
 
 # Run the program

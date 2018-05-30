@@ -7,6 +7,8 @@ import threading
 from models import WebcamFeed
 from ImportScreen import *
 from collections import OrderedDict
+import SettingsData
+
 
 class CameraWindow( wx.Dialog ):
     def __init__( self, par ):
@@ -82,7 +84,12 @@ class CameraWindow( wx.Dialog ):
         #self.Bind(wx.EVT_CLOSE, self.onClose)        
 
     def StartLiveWebcamFeed( self ):
-        self.objWebCamFeed = WebcamFeed()
+        self.noOfCam = self.getConnectedCams()
+        camId = 0
+        if(self.noOfCam > 1):
+            camId = 1
+
+        self.objWebCamFeed = WebcamFeed(camId)
         if not self.objWebCamFeed.has_webcam():
             print ('Webcam has not been detected.')
             self.Close()           
@@ -96,8 +103,6 @@ class CameraWindow( wx.Dialog ):
         """ Bind custom paint events """
         self.m_panelVideo.Bind(wx.EVT_ERASE_BACKGROUND, self.onEraseBackground)              
         self.m_panelVideo.Bind(wx.EVT_PAINT, self.onPaint)
-        
-
         
         """ App states """
         self.STATE_RUNNING = 1
@@ -160,6 +165,15 @@ class CameraWindow( wx.Dialog ):
         self.objWebCamFeed.release()
         self.EndModal(0)
         self.Destroy()
+
+    def getConnectedCams(self):
+        max_tested = 100
+        for i in range(max_tested):
+            temp_camera = cv2.VideoCapture(i)
+            if temp_camera.isOpened():
+                temp_camera.release()
+                continue
+            return i 
 
 class TimerDialog( wx.Dialog ):
     def __init__( self, parent, objCam):

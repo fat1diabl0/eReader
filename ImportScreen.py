@@ -3,6 +3,8 @@
 import wx, os
 import wx.html2
 from ExportDialog import ExportDialog
+from Settings import SettingsDialog
+import SettingsData
 
 try:
     from agw import gradientbutton as GB
@@ -53,7 +55,12 @@ class ImportWindow( wx.Dialog ):
         # To Click on first button initially
         if len(self.dictImgOCRData.keys()) > 0:
             btnName = list(self.dictImgOCRData.keys())[0]
-            html = '<html><body style="background-color: rgb( 224, 224, 224 )"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+            c = SettingsData.FontColor.Get(includeAlpha=False)
+            color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
+            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:Helvetica;font-size:24px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+            html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;font-color:'+ SettingsData.FontColor.GetAsString() +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
             self.html_widget.SetPage( html, '' )
 
         html_panel_sizer.Add( html_pager_sizer, 0, wx.ALL, 20 )
@@ -108,7 +115,11 @@ class ImportWindow( wx.Dialog ):
     def ChangeHtmlContent( self, evt ):
         btn = evt.GetEventObject( );
         btnName = btn.GetName( )
-        html = '<html><body style="background-color: rgb( 224, 224, 224 )"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+        c = SettingsData.FontColor.Get(includeAlpha=False)
+        color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
+        #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:Helvetica;font-size:24px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+        #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:rgb'+ SettingsData.FontColor.Get(includeAlpha=False) +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
         self.html_widget.SetPage( html, '' )
 
     #code for export text. Export wx.html2 area file.
@@ -126,7 +137,8 @@ class ImportWindow( wx.Dialog ):
 
     #put here the code for button "Set Timer"
     def Settings( self, evt ):
-        wx.MessageBox( 'Settings Button' )
+        dlg = SettingsDialog(self)
+        dlg.ShowModal()
 
     def OnClose( self, evt ):
         #self.EndModal( -1 )
