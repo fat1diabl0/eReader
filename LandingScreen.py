@@ -8,6 +8,8 @@ from collections import OrderedDict
 import threading
 import shutil
 import SettingsData
+import PyPDF2
+from PIL import Image
 
 class MainFrame( wx.Frame ):
     #Window with 2 buttons
@@ -150,27 +152,45 @@ class MainFrame( wx.Frame ):
 
     #put here code for button "Import"
     def OnImportBtnClick( self, evt ):
-        img_wildcard = "PNG and GPG files (*.png;*.jpg)|*.png;*.jpg"
+        img_wildcard = "PNG and GPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
         image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+        
         if image_dlg.ShowModal( ) == wx.ID_OK:
-            lstImgPath = image_dlg.GetPaths( )
+            
+            lstSelectedFiles = image_dlg.GetPaths( )
 
-            #perform Google OCR
-            self.dictImgOCR = OrderedDict()
+            lstImages = []
+            IsPDFSelected = False
+            fname,fext = os.path.splitext(lstSelectedFiles[0])
+            if fext == '.pdf':
+                IsPDFSelected = True
+                fPath = os.path.dirname(fname)
+                lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
+                #print(lstImages)
+                if lstImages is None:
+                    return
+            else:
+                lstImages = lstSelectedFiles
 
-            max_count = 100 / len(lstImgPath)
-            val = 0
-            for img in lstImgPath:
-                val = val + max_count
-                self.gauge.SetValue(val)
-                imgOCRText = googleOCR.performGoogleOCR(img)
-                #print(imgOCRText)
-                imgName = os.path.splitext(os.path.basename(img))[0]
-                self.dictImgOCR[imgName] = imgOCRText
+            if len(lstImages) > 0:
+                #perform Google OCR
+                self.dictImgOCR = OrderedDict()
+                max_count = 100 / len(lstImages)
+                val = 0
+                for img in lstImages:
+                    val = val + max_count
+                    self.gauge.SetValue(val)
+                    imgOCRText = googleOCR.performGoogleOCR(img)
+                    #print(imgOCRText)
+                    imgName = os.path.splitext(os.path.basename(img))[0]
+                    self.dictImgOCR[imgName] = imgOCRText
 
-            dlg = ImportWindow( self )
-            dlg.Maximize( )
-            dlg.ShowModal( )
+                    if IsPDFSelected:
+                        os.remove(img)
+
+                dlg = ImportWindow( self )
+                dlg.Maximize( )
+                dlg.ShowModal( )
         
         image_dlg.Destroy( )
 
@@ -209,6 +229,55 @@ class MainFrame( wx.Frame ):
 
         return d
 
+    def GetImagesFromPDF(self,lstSelectedFiles,filePath):
+        try:
+            lstImages = []
+            
+            for pdf in lstSelectedFiles:
+                objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                
+                noOfPages = objPdf.numPages
+                
+                for page in objPdf.pages: 
+
+                    if '/XObject' in page['/Resources']:
+                        xObject = page['/Resources']['/XObject'].getObject()
+
+                    for obj in xObject:
+                        if xObject[obj]['/Subtype'] == '/Image':
+                            size = (xObject[obj]['/Width'], xObject[obj]['/Height'])
+                            data = xObject[obj].getData()
+                            if xObject[obj]['/ColorSpace'] == '/DeviceRGB':
+                                mode = "RGB"
+                            else:
+                                mode = "P"
+                    
+                            if '/Filter' in xObject[obj]:
+                                if xObject[obj]['/Filter'] == '/FlateDecode':
+                                    img = Image.frombytes(mode, size, data)
+                                    fname = obj[1:] + ".png"
+                                    fullFilePath = os.path.join(filePath,fname)
+                                    img.save(fullFilePath)
+                                    lstImages.append(fullFilePath)
+                                elif xObject[obj]['/Filter'] == '/DCTDecode':
+                                    fname = obj[1:] + ".jpg"
+                                    fullFilePath = os.path.join(filePath,fname)
+                                    img = open(fullFilePath, "wb")
+                                    img.write(data)
+                                    img.close()
+                                    lstImages.append(fullFilePath)
+                            else:
+                                img = Image.frombytes(mode, size, data)
+                                fname = obj[1:] + ".png"
+                                fullFilePath = os.path.join(filePath,fname)
+                                img.save(fullFilePath)
+                                lstImages.append(fullFilePath)
+
+            return lstImages
+        except :
+            print("Not Supported PDF File - PyPDF2 Error")
+
+                    
 # Run the program
 if __name__ == "__main__":
     app = wx.App(False)
