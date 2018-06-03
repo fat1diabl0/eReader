@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import re
 import wx, os
 import wx.html2
 from ExportDialog import ExportDialog
 from Settings import SettingsDialog
 import SettingsData
+from NavigateDialog import NavigateDialog 
 
 try:
     from agw import gradientbutton as GB
@@ -24,8 +26,15 @@ class ImportWindow( wx.Dialog ):
         self.html_folder = os.path.join( os.getcwd( ), 'test_html' )
         self.min_width_menu = 250
         self.dictImgOCRData = par.dictImgOCR
-        self.BuildInterface( )
+        self.activeButton = ""
 
+        #Set Shortcut for Find & Replace Dialog
+        randomId = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.onFindShortCut, id=randomId)
+        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('F'), randomId )])
+        self.SetAcceleratorTable(accel_tbl)
+
+        self.BuildInterface( )
 
     def BuildInterface( self ):
         main_sizer = wx.BoxSizer( wx.HORIZONTAL )
@@ -55,13 +64,8 @@ class ImportWindow( wx.Dialog ):
         # To Click on first button initially
         if len(self.dictImgOCRData.keys()) > 0:
             btnName = list(self.dictImgOCRData.keys())[0]
-            c = SettingsData.FontColor.Get(includeAlpha=False)
-            color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:Helvetica;font-size:24px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-            html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-            #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;font-color:'+ SettingsData.FontColor.GetAsString() +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-            self.html_widget.SetPage( html, '' )
+            self.UpdateHTMLPage(btnName)
+            self.activeButton = btnName
 
         html_panel_sizer.Add( html_pager_sizer, 0, wx.ALL, 20 )
 
@@ -115,13 +119,110 @@ class ImportWindow( wx.Dialog ):
     def ChangeHtmlContent( self, evt ):
         btn = evt.GetEventObject( );
         btnName = btn.GetName( )
+        self.UpdateHTMLPage(btnName)
+        self.activeButton = btnName
+
+    def UpdateHTMLPage(self,btnName):
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-        #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:Helvetica;font-size:24px"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-        #html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:rgb'+ SettingsData.FontColor.Get(includeAlpha=False) +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
         html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
-        self.html_widget.SetPage( html, '' )
+        self.html_widget.SetPage( html, '' )        
 
+    def onFindShortCut(self,evt):
+       self.findData = wx.FindReplaceData() 
+       dlg = wx.FindReplaceDialog(self, self.findData, "Find & Replace", wx.FR_REPLACEDIALOG)
+       dlg.Bind(wx.EVT_FIND, self.onFindNext)
+       dlg.Bind(wx.EVT_FIND_NEXT, self.onFindNext)
+       dlg.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
+       dlg.Bind(wx.EVT_FIND_REPLACE_ALL, self.onReplaceAll)
+       dlg.Bind(wx.EVT_FIND_CLOSE, self.onFindClose)
+       dlg.Show(True) 
+
+    def onFindNext(self, evt):
+        strFind = (self.findData.GetFindString()).strip()
+        intFlags = self.findData.GetFlags()
+
+        if intFlags == 1:
+            flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
+        elif intFlags == 3:
+            flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD
+        elif intFlags == 5:
+            flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_MATCH_CASE
+        elif intFlags == 7:
+            flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE
+
+        self.html_widget.Find(strFind,flags=flagToSet)
+
+    def onReplace(self, evt):
+        strFind = (self.findData.GetFindString()).strip()
+        strReplace = (self.findData.GetReplaceString()).strip()
+
+        if len(strReplace):
+            intFlags = self.findData.GetFlags()
+
+            if intFlags == 1:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
+                pattern = re.compile(strFind,re.IGNORECASE)
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+
+            elif intFlags == 3:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD
+                pattern = re.compile(r'\b'+strFind+r'\b',re.IGNORECASE)
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+
+            elif intFlags == 5:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_MATCH_CASE
+                strNewPageText = self.dictImgOCRData[self.activeButton].replace(strFind,strReplace,1)
+
+            elif intFlags == 7:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE        
+                pattern = re.compile(r'\b'+strFind+r'\b')
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+
+            intNoOfFound = self.html_widget.Find(strFind,flags=flagToSet)
+
+            self.dictImgOCRData[self.activeButton] = strNewPageText
+            self.UpdateHTMLPage(self.activeButton)            
+        else:
+            wx.MessageBox("Please enter replace value.")
+
+    def onReplaceAll(self, evt):
+        strFind = (self.findData.GetFindString()).strip()
+        strReplace = (self.findData.GetReplaceString()).strip()
+        
+        if len(strReplace):
+            intFlags = self.findData.GetFlags()
+
+            if intFlags == 1:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
+                pattern = re.compile(strFind,re.IGNORECASE)
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+
+            elif intFlags == 3:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD
+                pattern = re.compile(r'\b'+strFind+r'\b',re.IGNORECASE)
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+
+            elif intFlags == 5:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_MATCH_CASE
+                strNewPageText = self.dictImgOCRData[self.activeButton].replace(strFind,strReplace)
+
+            elif intFlags == 7:
+                flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE        
+                pattern = re.compile(r'\b'+strFind+r'\b')
+                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+
+
+            self.dictImgOCRData[self.activeButton] = strNewPageText
+            self.UpdateHTMLPage(self.activeButton)
+        else:
+            wx.MessageBox("Please enter replace value.")
+
+    def onFindClose(self, evt):
+        self.html_widget.Find("")
+        evt.GetDialog().Destroy()
+        self.UpdateHTMLPage(self.activeButton)
+        
     #code for export text. Export wx.html2 area file.
     def ExportText( self, evt ):
         html = self.html_widget.GetPageSource( )
@@ -133,7 +234,9 @@ class ImportWindow( wx.Dialog ):
 
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
-        wx.MessageBox( 'Navigate Text Button' )
+        #wx.MessageBox( 'Navigate Text Button' )
+        dlg = NavigateDialog(self)
+        dlg.ShowModal()
 
     #put here the code for button "Set Timer"
     def Settings( self, evt ):
