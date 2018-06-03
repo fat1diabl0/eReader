@@ -31,7 +31,7 @@ class ImportWindow( wx.Dialog ):
         #Set Shortcut for Find & Replace Dialog
         randomId = wx.NewId()
         self.Bind(wx.EVT_MENU, self.onFindShortCut, id=randomId)
-        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('H'), randomId )])
+        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('F'), randomId )])
         self.SetAcceleratorTable(accel_tbl)
 
         self.BuildInterface( )
