@@ -141,6 +141,7 @@ class ImportWindow( wx.Dialog ):
     def onFindNext(self, evt):
         strFind = (self.findData.GetFindString()).strip()
         intFlags = self.findData.GetFlags()
+        flagToSet = 1
 
         if intFlags == 1:
             flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
@@ -159,6 +160,7 @@ class ImportWindow( wx.Dialog ):
 
         if len(strReplace):
             intFlags = self.findData.GetFlags()
+            flagToSet = 1
 
             if intFlags == 1:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
@@ -192,7 +194,8 @@ class ImportWindow( wx.Dialog ):
         
         if len(strReplace):
             intFlags = self.findData.GetFlags()
-
+            flagToSet = 1
+            
             if intFlags == 1:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
                 pattern = re.compile(strFind,re.IGNORECASE)
