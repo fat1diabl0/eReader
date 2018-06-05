@@ -6,23 +6,12 @@
 
 ## Run python3 or py LandingScreen.py to run the whole project
 
-## Milestone 3 task
-### Complete Settings UI and functionality
-* Please refer to settings UI [here](https://imgur.com/a/JkuJrpd)
-* First option: Choosing prefferd scanner - Choice between Webcam and usb camera detected. 
-* Change font - use standard system fonts available in WxPython
-* Font Size - Change font size. use standard system setup.
-* Font Color - changing font color should reflect in the output in wxhtml area
-* Save captured images? - keep the images taken during camera mode instead of deleting them after they're done. Overwrite existing photos. 
-
-## Default values for all of them
-* Camera List - USB Camera
-* Font - Helvetica
-* Font size - 24px
-* Font color - black
-* save images? - no
-
-## Priority List
-* Settings page
-* Option to import PDFs and do OCR. 
-
+## Milestone 4 updates
+### Following changes to the UI
+* Import PDF is not working at all. Need to double check this. 
+* Remove back button because of the flickering video. Use CTRL+backspace to go to main menu.
+* CTRL + i to open import dialog. Should be made available even in the camera screen. 
+* CTRL + up arrow to zoom in and ctrl + down arrow to zoom out of the camera.
+* ctrl + up arrow to increase font size, ctrl + down arrow to decrease font size. 
+* use standard dialogs wherever possible. 
+* Remove "Find" tab from the navigation dialog. 
