@@ -7,6 +7,7 @@ from ExportDialog import ExportDialog
 from Settings import SettingsDialog
 import SettingsData
 from NavigateDialog import NavigateDialog 
+from BookmarkNameDialog import BookmarkDialog
 
 try:
     from agw import gradientbutton as GB
@@ -33,6 +34,18 @@ class ImportWindow( wx.Dialog ):
         self.Bind(wx.EVT_MENU, self.onFindShortCut, id=randomId)
         accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('F'), randomId )])
         self.SetAcceleratorTable(accel_tbl)
+
+        #Set Shortcut for Bookmark Dialog
+        randomIdBM = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.onBookmarkShortCut, id=randomIdBM)
+        accel_tbl_BM = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('B'), randomIdBM )])
+        self.SetAcceleratorTable(accel_tbl_BM)        
+
+        #Dictionery for storing Bookmark data
+        self.dictBookmarkData = {}
+        
+        #Dictionery for storing Bookmark data
+        self.dictHeadingsData = {}
 
         self.BuildInterface( )
 
@@ -239,12 +252,16 @@ class ImportWindow( wx.Dialog ):
     def NavigateText( self, evt ):
         #wx.MessageBox( 'Navigate Text Button' )
         dlg = NavigateDialog(self)
-        dlg.ShowModal()
+        dlg.Show()
 
     #put here the code for button "Set Timer"
     def Settings( self, evt ):
         dlg = SettingsDialog(self)
         dlg.ShowModal()
+
+    def onBookmarkShortCut(self,evt):
+        BMDialog = BookmarkDialog(self)
+        BMDialog.Show()
 
     def OnClose( self, evt ):
         #self.EndModal( -1 )
