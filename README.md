@@ -8,10 +8,25 @@
 
 ## Milestone 4 updates
 ### Following changes to the UI
-* Import PDF is not working at all. Need to double check this. 
-* Remove back button because of the flickering video. Use CTRL+backspace to go to main menu.
-* CTRL + i to open import dialog. Should be made available even in the camera screen. 
-* CTRL + up arrow to zoom in and ctrl + down arrow to zoom out of the camera.
-* ctrl + up arrow to increase font size, ctrl + down arrow to decrease font size. 
-* use standard dialogs wherever possible. 
-* Remove "Find" tab from the navigation dialog. 
+
+#### Priority 1
+* Add highlights to menu bar. When someone presses ALT key. Standard Wx Python behaviour. Please refer to Notepad.
+* Add hotkeys to all functions. Please make it possible to edit hotkeys from a single file. Here's a list of hotkeys, all hotkeys will work with Ctrl:
+  * i - import file
+  * space - take photo
+  * d - done taking photos, start ocr
+  * up arrow/down arrow - zoom in/zoom out of camera
+  * t - setup timer
+  * s - export dialog 
+  * f - find and replace
+  * b - bookmarks
+  * h - navigation
+  * x - settings dialog
+  
+#### Priority 2
+* Please check import PDFs. Sent you sample PDFs on upwork
+* Make sure the camera feed deosnt cause buttons to flicker. 
+* Redesign navigation dialog. 
+
+#### Priority 3
+* Complete Headings.
