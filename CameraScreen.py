@@ -4,37 +4,38 @@ import wx, os
 import cv2
 import time
 import threading
+import LandingScreen
 from models import WebcamFeed
 from ImportScreen import *
 from collections import OrderedDict
 import SettingsData
+from backend import googleOCR
+import shutil
+import SettingsData
+import PyPDF2
+from PIL import Image
 
+class CameraPanel( wx.Panel ):
+    def __init__( self, parent ):
+        #wx.Panel.__init__(self, parent, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
+        wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.TAB_TRAVERSAL )        
 
-class CameraWindow( wx.Dialog ):
-    def __init__( self, par ):
-        wx.Dialog.__init__(self, par, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
-        self.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
-        size = wx.Display( ).GetClientArea( )
-        width_window = size.GetWidth( )
-        height_window = size.GetHeight( )
-        self.SetMinSize( wx.Size( 0.75 * width_window, 0.75 * height_window ) )
-        self.SetPosition( wx.Point( 0.125 *width_window, 0.125 * height_window ) )
-        self.icons_folder = os.path.join( os.getcwd( ), 'Assets' )
-        self.min_width_menu = 250
-        self.locale = wx.Locale(wx.LANGUAGE_ENGLISH)
+        self.parent_frame = parent
+
         self.BuildInterface()
         self.StartLiveWebcamFeed()
-     
+        self.Layout()
+        
     def BuildInterface( self ):
         main_sizer = wx.BoxSizer( wx.HORIZONTAL )
         right_sizer = wx.BoxSizer( wx.VERTICAL )
 
         self.m_panelVideo = wx.Panel( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
-        self.m_panelVideo.SetBackgroundColour( wx.BLUE )
+        self.m_panelVideo.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
         right_sizer.Add(self.m_panelVideo, 1, wx.EXPAND |wx.ALL, 5)
 
         left_sizer = wx.BoxSizer( wx.VERTICAL )
-        left_sizer.SetMinSize( self.min_width_menu, 200 )
+        left_sizer.SetMinSize( self.parent_frame.min_width_menu, 200 )
         main_sizer.Add( left_sizer )
         main_sizer.Add( right_sizer, 1, wx.EXPAND )
 
@@ -44,7 +45,7 @@ class CameraWindow( wx.Dialog ):
         back_btn_sizer = wx.BoxSizer( wx.HORIZONTAL )
         st_txt_back = wx.StaticText( panel, -1, 'Back', style = wx.ALIGN_CENTRE_HORIZONTAL )
         panel.Bind( wx.EVT_LEFT_DOWN, self.onClose )
-        st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.onClose )
+        st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.onBack )
         st_txt_back.SetForegroundColour( wx.WHITE )
         font_back = st_txt_back.GetFont( )
         font_back.SetPointSize( 15 )
@@ -61,7 +62,7 @@ class CameraWindow( wx.Dialog ):
 
         for img_path, label, func in buttons:
             #image button
-            img = wx.Image( os.path.join( self.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
+            img = wx.Image( os.path.join( self.parent_frame.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
             bmp = img.ConvertToBitmap( )
             btn = wx.BitmapButton( self, -1, bmp, style=wx.NO_BORDER )
             btn.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
@@ -81,90 +82,93 @@ class CameraWindow( wx.Dialog ):
         self.Layout( )
 
         """ Bind a custom close event (needed for Windows) """
-        #self.Bind(wx.EVT_CLOSE, self.onClose)        
+        self.Bind(wx.EVT_CLOSE, self.onClose)        
 
     def StartLiveWebcamFeed( self ):
         self.noOfCam = self.getConnectedCams()
         camId = 0
+        #print(self.noOfCam)
         if(self.noOfCam > 1):
-            camId = 1
+            camId = 0
 
-        self.objWebCamFeed = WebcamFeed(camId)
-        if not self.objWebCamFeed.has_webcam():
-            print ('Webcam has not been detected.')
-            self.Close()           
+        t0 = threading.Thread(target=self.StartCam, args= (camId,))
+        t0.start()
 
-        """ Creates a 30 fps timer for the update loop """
-        self.timer = wx.Timer(self)
-        self.timer.Start(1000./30.)
-        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
-        self.updating = False
-        
-        """ Bind custom paint events """
-        self.m_panelVideo.Bind(wx.EVT_ERASE_BACKGROUND, self.onEraseBackground)              
-        self.m_panelVideo.Bind(wx.EVT_PAINT, self.onPaint)
-        
-        """ App states """
-        self.STATE_RUNNING = 1
-        self.STATE_CLOSING = 2
-        self.state = self.STATE_RUNNING        
+    def StartCam (self,camID):
+        self.vc = cv2.VideoCapture(camID)
+        cv2.namedWindow("Camera Window")
+        if self.vc.isOpened(): 
+                rval,  frame  = self.vc.read()
+        else:
+                rval  = False
 
-    """ Main Update loop that calls the Paint function """
-    def onUpdate(self, event):
-        if self.state == self.STATE_RUNNING:
-            self.Refresh()
-    
-    """ Retrieves a new webcam image and paints it onto the frame """
-    def onPaint(self, event):
-        fw, fh = self.m_panelVideo.GetSize()
-        # Retrieve a scaled image from the opencv model
-        frame = self.objWebCamFeed.get_image(fw, fh)
-        h, w = frame.shape[:2]
-        image = wx.Bitmap.FromBuffer(w, h, frame) 
-        
-        # Use Buffered Painting to avoid flickering
-        dc = wx.BufferedPaintDC(self.m_panelVideo)
-        dc.DrawBitmap(image, 0, 0)    
-    
-    """ Background will never be erased, this avoids flickering """
-    def onEraseBackground(self, event):
-        return
-    
+        while rval:
+                cv2.imshow("Camera Window", frame)
+                rval, frame = self.vc.read()
+                key = cv2.waitKey(1)
+                if key == 27: # exit on ESC
+                    break
+
+        self.vc.release() 
+        cv2.destroyAllWindows()
+
     #put here the code for button "Take Photo"
     def TakePhoto( self, evt ):
-        img = self.objWebCamFeed.read()
+        if self.IsShown():
+            if self.vc.isOpened():
+                _,img = self.vc.read()
 
-        workDir = os.path.join(os.getcwd(),"pics")
-        if not os.path.exists(workDir):
-            os.makedirs(workDir)        
-        
-        imgName = str(GetNewImageName()) + ".png"
+                workDir = os.path.join(os.getcwd(),"pics")
+                if not os.path.exists(workDir):
+                    os.makedirs(workDir)        
+                
+                imgName = str(GetNewImageName()) + ".png"
 
-        imgPath = os.path.join(workDir,imgName)
-        cv2.imwrite(imgPath,img)
+                imgPath = os.path.join(workDir,imgName)
+                cv2.imwrite(imgPath,img)
         
     #put here the code for button "Done"
     def Done( self, evt ):
-        lstThread = threading.enumerate()
-        for t in lstThread:
-            if t.name == "TimerThread":
-                t.cancel()
-                break   
-        cv2.destroyAllWindows()
-        self.objWebCamFeed.release()                
-        self.EndModal(1)  
-        self.Destroy()       
+        if self.IsShown():
+            lstThread = threading.enumerate()
+            for t in lstThread:
+                if t.name == "TimerThread":
+                    t.cancel()
+                    break   
+            cv2.destroyAllWindows()
+            self.vc.release()           
+
+            self.parent_frame.dictImgOCR = OrderedDict()
+            self.parent_frame.dictImgOCR = self.GetAllImageFiles()
+
+            self.Hide()
+            if self.parent_frame.landingPanel.IsShown():
+                self.parent_frame.landingPanel.Hide()
+            self.parent_frame.importPanel.Show()
+            self.parent_frame.importPanel.LoadHTMLPage()
+            self.parent_frame.Layout()
 
     #put here the code for button "Set Timer"
     def SetTimer( self, evt ):
-        dlg = TimerDialog(self,self.objWebCamFeed)
-        dlg.Show()
+        if self.IsShown():
+            dlg = TimerDialog(self,self.vc)
+            dlg.Show()
         	
     def onClose( self, evt ):
-        cv2.destroyAllWindows()
-        self.objWebCamFeed.release()
-        self.EndModal(0)
+        if self.vc.isOpened():
+            self.vc.release()
+            cv2.destroyAllWindows()
+            
         self.Destroy()
+
+    def onBack( self, evt ):
+        if self.vc.isOpened():
+            self.vc.release()
+            cv2.destroyAllWindows()
+        
+        self.Hide()
+        self.parent_frame.landingPanel.Show()
+        self.parent_frame.Layout()
 
     def getConnectedCams(self):
         max_tested = 100
@@ -174,6 +178,84 @@ class CameraWindow( wx.Dialog ):
                 temp_camera.release()
                 continue
             return i 
+
+    def GetAllImageFiles(self):
+
+        d = OrderedDict()
+
+        workDir = os.path.join(os.getcwd(),"pics")
+
+        if os.path.exists(workDir):
+            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+
+            if(len(lstAllPNGFiles) > 0):
+                max_count = 100 / len(lstAllPNGFiles)
+                val = 0
+                
+                for p in lstAllPNGFiles:
+                    val = val + max_count
+                    #self.gauge.SetValue(val)
+                    imgName = p.split('.')[0]
+                    imgFullPath = os.path.join(workDir,p)
+                    if imgName not in d.keys():
+                        imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                        #print(imgOCRText)
+                        d[imgName] = imgOCRText
+
+                #self.gauge.SetValue(0)
+
+            if SettingsData.IsSaveImages == "No":
+                shutil.rmtree(workDir)
+
+        return d
+
+    def GetImagesFromPDF(self,lstSelectedFiles,filePath):
+        try:
+            lstImages = []
+            
+            for pdf in lstSelectedFiles:
+                objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                
+                noOfPages = objPdf.numPages
+                
+                for page in objPdf.pages: 
+
+                    if '/XObject' in page['/Resources']:
+                        xObject = page['/Resources']['/XObject'].getObject()
+
+                    for obj in xObject:
+                        if xObject[obj]['/Subtype'] == '/Image':
+                            size = (xObject[obj]['/Width'], xObject[obj]['/Height'])
+                            data = xObject[obj].getData()
+                            if xObject[obj]['/ColorSpace'] == '/DeviceRGB':
+                                mode = "RGB"
+                            else:
+                                mode = "P"
+                    
+                            if '/Filter' in xObject[obj]:
+                                if xObject[obj]['/Filter'] == '/FlateDecode':
+                                    img = Image.frombytes(mode, size, data)
+                                    fname = obj[1:] + ".png"
+                                    fullFilePath = os.path.join(filePath,fname)
+                                    img.save(fullFilePath)
+                                    lstImages.append(fullFilePath)
+                                elif xObject[obj]['/Filter'] == '/DCTDecode':
+                                    fname = obj[1:] + ".jpg"
+                                    fullFilePath = os.path.join(filePath,fname)
+                                    img = open(fullFilePath, "wb")
+                                    img.write(data)
+                                    img.close()
+                                    lstImages.append(fullFilePath)
+                            else:
+                                img = Image.frombytes(mode, size, data)
+                                fname = obj[1:] + ".png"
+                                fullFilePath = os.path.join(filePath,fname)
+                                img.save(fullFilePath)
+                                lstImages.append(fullFilePath)
+
+            return lstImages
+        except :
+            print("Not Supported PDF File - PyPDF2 Error")                
 
 class TimerDialog( wx.Dialog ):
     def __init__( self, parent, objCam):
@@ -223,7 +305,7 @@ class TimerDialog( wx.Dialog ):
                 wx.MessageBox("Please enter correct value.")  
 
     def capture(self,t):
-        img = self.objTimerWebCam.read()
+        _,img = self.objTimerWebCam.read()
 
         workDir = os.path.join(os.getcwd(),"pics")
         if not os.path.exists(workDir):
@@ -254,26 +336,26 @@ def GetNewImageName():
     if len(lstFiles) == 0:
         return 1
     else:
-        return max(lstFiles) + 1
+        return max(lstFiles) + 1            
 
-def GetAllImageFiles():
-    workDir = os.path.join(os.getcwd(),"pics")
+# def GetAllImageFiles():
+#     workDir = os.path.join(os.getcwd(),"pics")
 
-    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+#     lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png','jpg')]
 
-    d = OrderedDict()
+#     d = OrderedDict()
 
-    for p in lstAllPNGFiles:
-        imgName = p.split('.')[0]
-        imgFullPath = os.path.join(workDir,p)
-        if imgName not in d.keys():
-            d[imgName] = imgFullPath
+#     for p in lstAllPNGFiles:
+#         imgName = p.split('.')[0]
+#         imgFullPath = os.path.join(workDir,p)
+#         if imgName not in d.keys():
+#             d[imgName] = imgFullPath
 
-    return d
+#     return d
 
 if __name__ == '__main__':
     app = wx.App(False)
-    frame = CameraWindow(None)
+    frame = MainWindow()
+    frame.Maximize( )
     frame.Show()
-    app.SetTopWindow(frame)
     app.MainLoop()
