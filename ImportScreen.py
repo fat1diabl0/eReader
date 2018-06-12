@@ -7,71 +7,55 @@ from ExportDialog import ExportDialog
 from Settings import SettingsDialog
 import SettingsData
 from NavigateDialog import NavigateDialog 
+from BookmarkNameDialog import BookmarkDialog
 
 try:
     from agw import gradientbutton as GB
 except ImportError: # if it's not there locally, try the wxPython lib.
     import wx.lib.agw.gradientbutton as GB
 
-class ImportWindow( wx.Dialog ):
-    def __init__( self, par):
-        wx.Dialog.__init__(self, par, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX  )
-        self.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
-        size = wx.Display( ).GetClientArea( )
-        width_window = size.GetWidth( )
-        height_window = size.GetHeight( )
-        self.SetMinSize( wx.Size( 0.75 * width_window, 0.75 * height_window ) )
-        self.SetPosition( wx.Point( 0.125 *width_window, 0.125 * height_window ) )
-        self.icons_folder = os.path.join( os.getcwd( ), 'Assets' )
-        self.html_folder = os.path.join( os.getcwd( ), 'test_html' )
-        self.min_width_menu = 250
-        self.dictImgOCRData = par.dictImgOCR
+class ImportPanel( wx.Panel ):
+    def __init__( self, parent):
+        # wx.Dialog.__init__(self, par, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX  )
+        wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.TAB_TRAVERSAL )        
+        
+        self.parent_frame = parent
+        
+        # self.dictImgOCRData = self.parent_frame.dictImgOCR
         self.activeButton = ""
 
-        #Set Shortcut for Find & Replace Dialog
-        randomId = wx.NewId()
-        self.Bind(wx.EVT_MENU, self.onFindShortCut, id=randomId)
-        accel_tbl = wx.AcceleratorTable([(wx.ACCEL_CTRL,  ord('F'), randomId )])
-        self.SetAcceleratorTable(accel_tbl)
+        #Dictionery for storing Bookmark data
+        self.dictBookmarkData = {}
+        
+        #Dictionery for storing Bookmark data
+        self.dictHeadingsData = {}
 
         self.BuildInterface( )
+        self.Layout()
 
     def BuildInterface( self ):
         main_sizer = wx.BoxSizer( wx.HORIZONTAL )
         right_sizer = wx.BoxSizer( wx.VERTICAL )
 
         #html panel
-        html_panel = wx.Panel( self, -1 )
-        html_panel.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
-        right_sizer.Add( html_panel, 1, wx.EXPAND )
+        self.html_panel = wx.Panel( self, -1 )
+        self.html_panel.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
+        right_sizer.Add( self.html_panel, 1, wx.EXPAND )
         html_panel_sizer = wx.BoxSizer( wx.VERTICAL )
 
         #wx.html widget
-        self.html_widget = wx.html2.WebView.New( html_panel, style = wx.BORDER_NONE )
+        self.html_widget = wx.html2.WebView.New( self.html_panel, style = wx.BORDER_NONE )
         self.html_widget.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
         html_panel_sizer.Add( self.html_widget, 1, wx.EXPAND )
-        html_panel.SetSizer( html_panel_sizer )
+        self.html_panel.SetSizer( html_panel_sizer )
 
         #html pager with buttons to different html content
-        html_pager_sizer = wx.BoxSizer( wx.HORIZONTAL )
-
-        for key in self.dictImgOCRData.keys():
-            label_btn = key
-            html_btn = GB.GradientButton( html_panel, -1, label=label_btn, name=label_btn)
-            html_btn.Bind( wx.EVT_BUTTON, self.ChangeHtmlContent )
-            html_pager_sizer.Add( html_btn, 0, wx.RIGHT, 20 )
-
-        # To Click on first button initially
-        if len(self.dictImgOCRData.keys()) > 0:
-            btnName = list(self.dictImgOCRData.keys())[0]
-            self.UpdateHTMLPage(btnName)
-            self.activeButton = btnName
-
-        html_panel_sizer.Add( html_pager_sizer, 0, wx.ALL, 20 )
+        self.html_pager_sizer = wx.BoxSizer( wx.HORIZONTAL )
+        html_panel_sizer.Add( self.html_pager_sizer, 0, wx.ALL, 20 )
 
         #menu with buttons
         left_sizer = wx.BoxSizer( wx.VERTICAL )
-        left_sizer.SetMinSize( self.min_width_menu, 200 )
+        left_sizer.SetMinSize( self.parent_frame.min_width_menu, 200 )
         main_sizer.Add( left_sizer )
         main_sizer.Add( right_sizer, 1, wx.EXPAND )
 
@@ -80,8 +64,8 @@ class ImportWindow( wx.Dialog ):
         back_btn_panel.SetBackgroundColour( wx.BLACK )
         back_btn_sizer = wx.BoxSizer( wx.HORIZONTAL )
         st_txt_back = wx.StaticText( back_btn_panel, -1, 'Back', style = wx.ALIGN_CENTRE_HORIZONTAL )
-        back_btn_panel.Bind( wx.EVT_LEFT_DOWN, self.OnClose )
-        st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.OnClose )
+        back_btn_panel.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
+        st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
         st_txt_back.SetForegroundColour( wx.WHITE )
         font_back = st_txt_back.GetFont( )
         font_back.SetPointSize( 15 )
@@ -98,7 +82,7 @@ class ImportWindow( wx.Dialog ):
 
         for img_path, label, func in buttons:
             #image button
-            img = wx.Image( os.path.join( self.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
+            img = wx.Image( os.path.join( self.parent_frame.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
             bmp = img.ConvertToBitmap( )
             btn = wx.BitmapButton( self, -1, bmp, style=wx.NO_BORDER )
             btn.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
@@ -116,6 +100,22 @@ class ImportWindow( wx.Dialog ):
         self.SetSizer( main_sizer )
         self.Layout( )
 
+    def LoadHTMLPage(self):
+        self.html_pager_sizer.Clear(True)
+        self.Layout()
+
+        for key in self.parent_frame.dictImgOCR.keys():
+            label_btn = key
+            html_btn = GB.GradientButton( self.html_panel, -1, label=label_btn, name=label_btn)
+            html_btn.Bind( wx.EVT_BUTTON, self.ChangeHtmlContent )
+            self.html_pager_sizer.Add( html_btn, 0, wx.RIGHT, 20 )
+
+        # To Click on first button initially
+        if len(self.parent_frame.dictImgOCR.keys()) > 0:
+            btnName = list(self.parent_frame.dictImgOCR.keys())[0]
+            self.UpdateHTMLPage(btnName)
+            self.activeButton = btnName  
+
     def ChangeHtmlContent( self, evt ):
         btn = evt.GetEventObject( );
         btnName = btn.GetName( )
@@ -125,18 +125,20 @@ class ImportWindow( wx.Dialog ):
     def UpdateHTMLPage(self,btnName):
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.dictImgOCRData[btnName] +'</body></html>'
+        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.parent_frame.dictImgOCR[btnName] +'</body></html>'
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
-       self.findData = wx.FindReplaceData() 
-       dlg = wx.FindReplaceDialog(self, self.findData, "Find & Replace", wx.FR_REPLACEDIALOG)
-       dlg.Bind(wx.EVT_FIND, self.onFindNext)
-       dlg.Bind(wx.EVT_FIND_NEXT, self.onFindNext)
-       dlg.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
-       dlg.Bind(wx.EVT_FIND_REPLACE_ALL, self.onReplaceAll)
-       dlg.Bind(wx.EVT_FIND_CLOSE, self.onFindClose)
-       dlg.Show(True) 
+        # print("onFindShortCut")
+        if self.IsShown():
+            self.findData = wx.FindReplaceData() 
+            dlg = wx.FindReplaceDialog(self, self.findData, "Find & Replace", wx.FR_REPLACEDIALOG)
+            dlg.Bind(wx.EVT_FIND, self.onFindNext)
+            dlg.Bind(wx.EVT_FIND_NEXT, self.onFindNext)
+            dlg.Bind(wx.EVT_FIND_REPLACE, self.onReplace)
+            dlg.Bind(wx.EVT_FIND_REPLACE_ALL, self.onReplaceAll)
+            dlg.Bind(wx.EVT_FIND_CLOSE, self.onFindClose)
+            dlg.Show(True) 
 
     def onFindNext(self, evt):
         strFind = (self.findData.GetFindString()).strip()
@@ -165,25 +167,25 @@ class ImportWindow( wx.Dialog ):
             if intFlags == 1:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
                 pattern = re.compile(strFind,re.IGNORECASE)
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton],count=1)
 
             elif intFlags == 3:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD
                 pattern = re.compile(r'\b'+strFind+r'\b',re.IGNORECASE)
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton],count=1)
 
             elif intFlags == 5:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_MATCH_CASE
-                strNewPageText = self.dictImgOCRData[self.activeButton].replace(strFind,strReplace,1)
+                strNewPageText = self.parent_frame.dictImgOCR[self.activeButton].replace(strFind,strReplace,1)
 
             elif intFlags == 7:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE        
                 pattern = re.compile(r'\b'+strFind+r'\b')
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton],count=1)
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton],count=1)
 
             intNoOfFound = self.html_widget.Find(strFind,flags=flagToSet)
 
-            self.dictImgOCRData[self.activeButton] = strNewPageText
+            self.parent_frame.dictImgOCR[self.activeButton] = strNewPageText
             self.UpdateHTMLPage(self.activeButton)            
         else:
             wx.MessageBox("Please enter replace value.")
@@ -199,24 +201,24 @@ class ImportWindow( wx.Dialog ):
             if intFlags == 1:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT
                 pattern = re.compile(strFind,re.IGNORECASE)
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton])
 
             elif intFlags == 3:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD
                 pattern = re.compile(r'\b'+strFind+r'\b',re.IGNORECASE)
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton])
 
             elif intFlags == 5:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_MATCH_CASE
-                strNewPageText = self.dictImgOCRData[self.activeButton].replace(strFind,strReplace)
+                strNewPageText = self.parent_frame.dictImgOCR[self.activeButton].replace(strFind,strReplace)
 
             elif intFlags == 7:
                 flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE        
                 pattern = re.compile(r'\b'+strFind+r'\b')
-                strNewPageText = pattern.sub(strReplace,self.dictImgOCRData[self.activeButton])
+                strNewPageText = pattern.sub(strReplace,self.parent_frame.dictImgOCR[self.activeButton])
 
 
-            self.dictImgOCRData[self.activeButton] = strNewPageText
+            self.parent_frame.dictImgOCR[self.activeButton] = strNewPageText
             self.UpdateHTMLPage(self.activeButton)
         else:
             wx.MessageBox("Please enter replace value.")
@@ -228,23 +230,36 @@ class ImportWindow( wx.Dialog ):
         
     #code for export text. Export wx.html2 area file.
     def ExportText( self, evt ):
-        html = self.html_widget.GetPageSource( )
-        txt = self.html_widget.GetPageText( )
-        dlg = ExportDialog( self, html, txt )
-        dlg.CentreOnScreen( )
-        dlg.Fit( )
-        dlg.ShowModal( )
+        if self.IsShown():
+            html = self.html_widget.GetPageSource( )
+            txt = self.html_widget.GetPageText( )
+            dlg = ExportDialog( self, html, txt )
+            dlg.CentreOnScreen( )
+            dlg.Fit( )
+            dlg.ShowModal( )
 
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
-        #wx.MessageBox( 'Navigate Text Button' )
-        dlg = NavigateDialog(self)
-        dlg.ShowModal()
+        if self.IsShown():
+            dlg = NavigateDialog(self)
+            dlg.Show()
 
     #put here the code for button "Set Timer"
     def Settings( self, evt ):
         dlg = SettingsDialog(self)
         dlg.ShowModal()
+
+    def onBookmarkShortCut(self,evt):
+        if self.IsShown():
+            BMDialog = BookmarkDialog(self)
+            BMDialog.Show()
+
+    def OnBack( self, evt ):
+        self.Hide()
+        if self.parent_frame.cameraPanel.IsShown():
+            self.parent_frame.cameraPanel.Hide()
+        self.parent_frame.landingPanel.Show()
+        self.parent_frame.Layout()
 
     def OnClose( self, evt ):
         #self.EndModal( -1 )

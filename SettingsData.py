@@ -12,3 +12,18 @@ FontSize = 24
 FontColor = wx.BLACK
 IsSaveImages = "No"
 
+
+#HOT Key Settings
+
+Key = wx.ACCEL_CTRL
+Import = 'I'
+TakePhoto = wx.WXK_SPACE
+ZoomInCamera = ""
+ZoomOutCamera = ""
+Done = 'D'
+Timer = 'T'
+Export = 'S'
+FindReplace = 'F'
+Bookmarks = 'B'
+Navigation = 'H'
+SettingsDialog = 'X'

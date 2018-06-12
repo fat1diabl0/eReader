@@ -184,3 +184,6 @@ class SettingsDialog ( wx.Dialog ):
 
 	def onCancel(self,evt):
 		self.Destroy( )
+
+
+	

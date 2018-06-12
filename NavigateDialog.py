@@ -1,103 +1,240 @@
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- 
+
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
 
 import wx
-try:
-    from agw import aui
-except ImportError: # if it's not there locally, try the wxPython lib.
-    import wx.lib.agw.aui as aui
+import wx.xrc
 
-class NavigateDialog( wx.Dialog ):
-    """Dialog which is appear when Navigate button was clicked"""
-    def __init__( self, par ):
-        wx.Dialog.__init__( self, par, -1, '', size=(650,450), style=0 )
-        #self.tabs = aui.AuiNotebook( self, style=aui.AUI_NB_TOP )
-        #self.tabs.SetMinClientSize( wx.Size( 700, 700))
-        self.tabs = wx.Notebook( self, -1 )
-        self.AddFindTab( )
-        self.AddBookmarksTab( )
-        self.AddHeadingsTab( )
-        sizer = wx.BoxSizer( wx.VERTICAL  )
-        sizer.Add( self.tabs, 1, wx.EXPAND )
-        self.SetSizer( sizer )
-        self.Layout( )
-        #wx.CallAfter(self.tabs.SendSizeEvent)
+###########################################################################
+## Class dlgNavigate
+###########################################################################
 
-    def AddFindTab( self ):
-        panel = wx.Panel( self.tabs, -1 )
-        self.tabs.AddPage( panel, 'Find' )
+class NavigateDialog ( wx.Dialog ):
+	
+	def __init__( self, parent ):
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Envision Reader", pos = wx.DefaultPosition, size = wx.Size( 485,320 ), style = wx.DEFAULT_DIALOG_STYLE )
+		
+		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
+		
+		self.ImportScreen = parent
 
-    def AddBookmarksTab( self ):
-        panel = wx.Panel( self.tabs, -1 )
-        panel.SetBackgroundColour( wx.Colour( 244,244, 244 ))
-        self.tabs.AddPage( panel, 'Bookmark' )
-        inner_panel = wx.Panel( panel, -1 )
-        inner_panel.SetBackgroundColour( wx.Colour( 236, 236, 236 ) )
-        sizer = wx.BoxSizer( wx.VERTICAL )
-        sizer.Add( inner_panel, 1, wx.EXPAND | wx.TOP|wx.LEFT|wx.RIGHT, 20 )
-        panel.SetSizer( sizer )
+		bSizer1 = wx.BoxSizer( wx.VERTICAL )
+		
+		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer7 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_notebook1 = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.panBookmark = wx.Panel( self.m_notebook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer9 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.searchBookmark = wx.SearchCtrl( self.panBookmark, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.searchBookmark.ShowSearchButton( True )
+		self.searchBookmark.ShowCancelButton( True )
+		bSizer9.Add( self.searchBookmark, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		lstBoxBookmarkChoices = list(self.ImportScreen.dictBookmarkData.keys())
+		self.lstBoxBookmark = wx.ListBox( self.panBookmark, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lstBoxBookmarkChoices, wx.LB_NEEDED_SB )
+		bSizer9.Add( self.lstBoxBookmark, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer8.Add( bSizer9, 1, wx.EXPAND, 5 )
+		
+		bSizer10 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		#bSizer10.AddSpacer( wx.DefaultSize, 0, wx.EXPAND, 5 )
+		
+		self.btnBMGo = wx.Button( self.panBookmark, wx.ID_ANY, u"Go To Bookmark", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer10.Add( self.btnBMGo, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		self.btnBMPrevious = wx.Button( self.panBookmark, wx.ID_ANY, u"Previous", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer10.Add( self.btnBMPrevious, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		self.btnBMNext = wx.Button( self.panBookmark, wx.ID_ANY, u"Next", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer10.Add( self.btnBMNext, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		self.btnBMDelete = wx.Button( self.panBookmark, wx.ID_ANY, u"Delete", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer10.Add( self.btnBMDelete, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		self.btnBMDeleteAll = wx.Button( self.panBookmark, wx.ID_ANY, u"Delete All", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer10.Add( self.btnBMDeleteAll, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		
+		bSizer8.Add( bSizer10, 1, wx.EXPAND|wx.ALIGN_BOTTOM|wx.TOP, 5 )
+		
+		
+		self.panBookmark.SetSizer( bSizer8 )
+		self.panBookmark.Layout()
+		bSizer8.Fit( self.panBookmark )
+		self.m_notebook1.AddPage( self.panBookmark, u"Bookmark", True )
+		self.pnlHeading = wx.Panel( self.m_notebook1, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.TAB_TRAVERSAL )
+		bSizer11 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer12 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.searchHeading = wx.SearchCtrl( self.pnlHeading, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.searchHeading.ShowSearchButton( True )
+		self.searchHeading.ShowCancelButton( True )
+		bSizer12.Add( self.searchHeading, 0, wx.ALL|wx.EXPAND, 5 )
+		
+		lstBoxHeadingChoices = []
+		self.lstBoxHeading = wx.ListBox( self.pnlHeading, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, lstBoxHeadingChoices, wx.LB_NEEDED_SB )
+		bSizer12.Add( self.lstBoxHeading, 1, wx.ALL|wx.EXPAND, 5 )
+		
+		
+		bSizer11.Add( bSizer12, 1, wx.EXPAND, 5 )
+		
+		bSizer13 = wx.BoxSizer( wx.VERTICAL )
+		
+		
+		#bSizer13.AddSpacer( ( 0, 25), 0, 0, 5 )
+		
+		self.btnHeadGo = wx.Button( self.pnlHeading, wx.ID_ANY, u"Go To Heading", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer13.Add( self.btnHeadGo, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		self.btnHeadPrevious = wx.Button( self.pnlHeading, wx.ID_ANY, u"Previous", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer13.Add( self.btnHeadPrevious, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		self.btnHeadNext = wx.Button( self.pnlHeading, wx.ID_ANY, u"Next", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer13.Add( self.btnHeadNext, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		
+		bSizer11.Add( bSizer13, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.TOP, 5 )
+		
+		
+		self.pnlHeading.SetSizer( bSizer11 )
+		self.pnlHeading.Layout()
+		bSizer11.Fit( self.pnlHeading )
+		self.m_notebook1.AddPage( self.pnlHeading, u"Headings", False )
+		
+		bSizer7.Add( self.m_notebook1, 1, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer3.Add( bSizer7, 1, wx.EXPAND, 5 )
+		
+		bSizer1.Add( bSizer3, 1, wx.EXPAND, 5 )
+		
+		self.m_staticline2 = wx.StaticLine( self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL )
+		bSizer1.Add( self.m_staticline2, 0, wx.EXPAND |wx.ALL, 5 )
+		
+		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		bSizer4.Add( self.btnCancel, 0, wx.ALL, 5 )
+		self.btnCancel.Bind( wx.EVT_BUTTON, self.OnClose )
+		
+		bSizer1.Add( bSizer4, 0, wx.ALIGN_RIGHT, 5 )
+		
+		
+		self.SetSizer( bSizer1 )
+		self.Layout()
+		
+		self.Centre( wx.BOTH )
 
-        #add listbox with bookmarks
-        inner_panel_sizer = wx.BoxSizer( wx.HORIZONTAL )
-        bookmarks_sizer = wx.BoxSizer( wx.VERTICAL )
-        st = wx.StaticText( inner_panel, -1, 'Bookmarks:' )
-        bookmarks_sizer.Add( st, 0, wx.BOTTOM, 7 )
-        list_choices = [ 'Bookmark 1', 'Bookmark X', 'Bookmark Y', 'Bookmark Z' ]
-        self.list_bookmarks = wx.ListBox( inner_panel, -1, size=( 200, 200 ), choices=list_choices )
-        bookmarks_sizer.Add( self.list_bookmarks, 0 )
-        inner_panel_sizer.Add( bookmarks_sizer, 0, wx.TOP|wx.LEFT|wx.RIGHT, 50 )
+		
+		# Connect Events
+		self.m_notebook1.Bind( wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnTabChanged )
+		self.btnBMGo.Bind( wx.EVT_BUTTON, self.OnGoToBookmark )
+		self.btnBMPrevious.Bind( wx.EVT_BUTTON, self.OnBMPrevious )
+		self.btnBMNext.Bind( wx.EVT_BUTTON, self.OnBMNext )
+		self.btnBMDelete.Bind( wx.EVT_BUTTON, self.OnBMDelete )
+		self.btnBMDeleteAll.Bind( wx.EVT_BUTTON, self.OnBMDeleteAll )
+		self.btnHeadGo.Bind( wx.EVT_BUTTON, self.OnGoToHeading )
+		self.btnHeadPrevious.Bind( wx.EVT_BUTTON, self.OnHeadingPrevious )
+		self.btnHeadNext.Bind( wx.EVT_BUTTON, self.OnHeadingNext )
+		self.searchBookmark.Bind( wx.EVT_TEXT_ENTER, self.OnBMSearchEnter )
+		self.searchBookmark.Bind( wx.EVT_SEARCHCTRL_SEARCH_BTN, self.OnBMSearchEnter )
+		self.searchBookmark.Bind( wx.EVT_SEARCHCTRL_CANCEL_BTN, self.OnBMSearchCancel )
 
-        buttons_sizer = wx.BoxSizer( wx.VERTICAL )
+	def __del__( self ):
+		pass
 
-        btn = wx.Button( inner_panel, -1, 'Go to bookmark', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
+	def OnTabChanged( self, event ):
+		page = self.m_notebook1.GetPageText(event.GetSelection())
+		#print(page)
+	
+	def OnBMSearchEnter( self , evt ):
+		strSearchVal = evt.GetString().strip()
 
-        btn = wx.Button( inner_panel, -1, 'Previous', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
+		if len(strSearchVal) != 0:
+			if strSearchVal in self.ImportScreen.dictBookmarkData.keys():
+			
+				self.lstBoxBookmark.Clear()
+				lstBoxBookmarkChoices = [strSearchVal]
+				self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)				
 
-        btn = wx.Button( inner_panel, -1, 'Previous', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
+	def OnBMSearchCancel( self , evt ):
+		self.searchBookmark.Clear()
+		self.lstBoxBookmark.Clear()
+		lstBoxBookmarkChoices = list(self.ImportScreen.dictBookmarkData.keys())
+		if len(lstBoxBookmarkChoices) > 0:
+			self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)	
 
-        btn = wx.Button( inner_panel, -1, 'Next', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
+	def OnGoToBookmark( self, event ):
+		intSelectedIndex = self.lstBoxBookmark.GetSelection()
+		strBMName  = self.lstBoxBookmark.GetString(intSelectedIndex)
+		strPageName = self.ImportScreen.dictBookmarkData[strBMName][0]
+		strBMText = self.ImportScreen.dictBookmarkData[strBMName][1]
 
-        btn = wx.Button( inner_panel, -1, 'Delete', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
+		self.ImportScreen.UpdateHTMLPage(strPageName)
+	
+	def OnBMPrevious( self, event ):
+		intSelectedIndex = self.lstBoxBookmark.GetSelection()
 
-        btn = wx.Button( inner_panel, -1, 'Delete All', size=(100,-1) )
-        buttons_sizer.Add( btn, 0, wx.BOTTOM, 7 )
-        btn.Bind( wx.EVT_BUTTON, self.OnBookMarkBtn )
-        inner_panel_sizer.Add( ( 0,0 ), 1 )#Add extra
-        inner_panel_sizer.Add( buttons_sizer, 0, wx.TOP|wx.LEFT, 70 )
-        inner_panel_sizer.Add( 50, -1, 0 )
-        inner_panel.SetSizer( inner_panel_sizer )
-        inner_panel.Layout( )
-        self.CreateBookmarkConfirmBtns( panel, sizer )
-        panel.Layout( )
+		if intSelectedIndex > 0:
+			newIndex = intSelectedIndex - 1
+			self.lstBoxBookmark.SetSelection(newIndex)
 
-    #Create Confirm Buttons on the Bookmark tab
-    def CreateBookmarkConfirmBtns( self, panel, sizer ):
-        btn_sizer = wx.BoxSizer( wx.HORIZONTAL )
-        btn_cancel = wx.Button( panel, -1, 'Cancel' )
-        btn_cancel.Bind( wx.EVT_BUTTON, self.Close )
-        btn_sizer.Add( btn_cancel, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 20 )
-        btn_add_new = wx.Button( panel, -1, 'Add New' )
-        btn_sizer.Add( btn_add_new, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 20 )
-        sizer.Add( btn_sizer, 0,wx.ALIGN_RIGHT|wx.RIGHT, 20 )
+			strBMName  = self.lstBoxBookmark.GetString(newIndex)
+			strPageName = self.ImportScreen.dictBookmarkData[strBMName][0]
+			strBMText = self.ImportScreen.dictBookmarkData[strBMName][1]
 
-    def Close( self, evt ):
-        self.EndModal( -1 )
-        self.Destroy( )
+			self.ImportScreen.UpdateHTMLPage(strPageName)
+	
+	def OnBMNext( self, event ):
+		intSelectedIndex = self.lstBoxBookmark.GetSelection()
+		
+		if intSelectedIndex < len(self.ImportScreen.dictBookmarkData.keys()) - 1:
+			newIndex = intSelectedIndex + 1
+			self.lstBoxBookmark.SetSelection(newIndex)
 
+			strBMName  = self.lstBoxBookmark.GetString(newIndex)
+			strPageName = self.ImportScreen.dictBookmarkData[strBMName][0]
+			strBMText = self.ImportScreen.dictBookmarkData[strBMName][1]
 
-    def OnBookMarkBtn( self, evt ):
-        wx.MessageBox( 'hello' )
+			self.ImportScreen.UpdateHTMLPage(strPageName)
 
+	def OnBMDelete( self, event ):
+		intSelectedIndex = self.lstBoxBookmark.GetSelection()
+		
+		if intSelectedIndex > 0:
+			strBMName  = self.lstBoxBookmark.GetString(intSelectedIndex)
+			del self.ImportScreen.dictBookmarkData[strBMName]
 
-    def AddHeadingsTab( self ):
-        panel = wx.Panel( self.tabs, -1 )
-        self.tabs.AddPage( panel, 'Heading' )
+			self.lstBoxBookmark.Clear()
+			lstBoxBookmarkChoices = list(self.ImportScreen.dictBookmarkData.keys())
+			self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)			
+	
+	def OnBMDeleteAll( self, event ):
+		self.ImportScreen.dictBookmarkData.clear()
+		self.lstBoxBookmark.Clear()
+	
+	def OnGoToHeading( self, event ):
+		event.Skip()
+	
+	def OnHeadingPrevious( self, event ):
+		event.Skip()
+	
+	def OnHeadingNext( self, event ):
+		event.Skip()
+		
+	def OnClose( self , evt ):
+		self.Destroy()
+
