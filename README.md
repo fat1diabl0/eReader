@@ -6,27 +6,45 @@
 
 ## Run python3 or py LandingScreen.py to run the whole project
 
-## Milestone 4 updates
-### Following changes to the UI
+## Milestone 5 updates
+* Prirority 1: Please implement the following changes
 
-#### Priority 1
-* Add highlights to menu bar. When someone presses ALT key. Standard Wx Python behaviour. Please refer to Notepad.
-* Add hotkeys to all functions. Please make it possible to edit hotkeys from a single file. Here's a list of hotkeys, all hotkeys will work with Ctrl:
-  * i - import file
-  * space - take photo
-  * d - done taking photos, start ocr
-  * up arrow/down arrow - zoom in/zoom out of camera
-  * t - setup timer
-  * s - export dialog 
-  * f - find and replace
-  * b - bookmarks
-  * h - navigation
-  * x - settings dialog
-  
-#### Priority 2
-* Please check import PDFs. Sent you sample PDFs on upwork
-* Make sure the camera feed deosnt cause buttons to flicker. 
-* Redesign navigation dialog. 
+1. The buttons on the main screen are still not properly labeled. When I come across these buttons with the tab key, they read as button. Please prioritize a fix for this as soon as possible. As Mario said, accessibility is very important for us, and the current version doesn’t meet accessibility standards.
+ 
 
-#### Priority 3
-* Complete Headings.
+Note that it is very important to use the correct declaration order for wx objects. E.g. this is bad:
+
+cameraButton = wx.Button(...)
+
+cameraLabel = wx.StaticText(..., label="camera")
+
+otherButton = wx.Button(...)
+
+otherLabel = wx.StaticText(..., label="cother")
+
+ 
+
+You should always declare the label before the object that needs to be associated with the label (i.e. a button, slider, etc.) E.g.
+
+cameraLabel = wx.StaticText(..., label="camera")
+
+cameraButton = wx.Button(...)
+
+otherLabel = wx.StaticText(..., label="cother")
+
+otherButton = wx.Button(...)
+
+ 
+
+b. It seems you are using a custom dialog for the save window. Is there a particular reason why you’re not using wx.FileSelector?
+ 
+
+c. Please make the navigate, export and settings dialogs close with escape.
+
+
+* Priority 2: Camera functionality setup + PDF import.
+
+* Priority 3: Headings and bookmarks. 
+
+
+
