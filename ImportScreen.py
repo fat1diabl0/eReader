@@ -232,11 +232,27 @@ class ImportPanel( wx.Panel ):
     def ExportText( self, evt ):
         if self.IsShown():
             html = self.html_widget.GetPageSource( )
-            txt = self.html_widget.GetPageText( )
-            dlg = ExportDialog( self, html, txt )
-            dlg.CentreOnScreen( )
-            dlg.Fit( )
-            dlg.ShowModal( )
+            pageText = self.html_widget.GetPageText( )
+
+            img_wildcard = "Text Documents(*.txt)|*.txt | HTML Files(*.html)|*.html | PDF Files(*.pdf)|*.pdf"
+            dlg = wx.FileDialog(self, "Save As", os.getcwd(),"",img_wildcard, wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)            
+            
+            if dlg.ShowModal() == wx.ID_OK:
+                fullPath = dlg.GetPath()
+                # print(fullPath)
+
+                wildcardIndex = dlg.GetFilterIndex()
+
+                # print(wildcardIndex)
+
+                if wildcardIndex == 0 or wildcardIndex == 1:
+                    with open(fullPath, 'w' ) as f:
+                        f.write(pageText)   
+                elif wildcardIndex == 2:
+                    html = re.sub( '<body.+?>','<body style="font-size:20px;">', pageText, 1, re.IGNORECASE  )
+                    pdfkit.from_string(html, fullPath)
+                    
+            dlg.Destroy()
 
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
