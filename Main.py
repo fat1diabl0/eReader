@@ -1,4 +1,4 @@
-import wx, os
+import wx, os, random
 import cv2
 import CameraScreen
 import LandingScreen
@@ -6,6 +6,7 @@ import ImportScreen
 from collections import OrderedDict
 from backend import googleOCR
 import SettingsData
+import PyPDF2
 
 class MainWindow( wx.Frame ):
     def __init__( self ):
@@ -25,15 +26,18 @@ class MainWindow( wx.Frame ):
 
         self.landingPanel = LandingScreen.LandingPanel(self)   
         bSizer3.Add( self.landingPanel, 0, wx.ALL | wx.EXPAND, 5 )         
-        self.landingPanel.Hide()   
-
-        self.importPanel = ImportScreen.ImportPanel(self)   
-        bSizer3.Add( self.importPanel, 0, wx.ALL | wx.EXPAND, 5 )
-        self.importPanel.Hide()        
 
         self.cameraPanel = CameraScreen.CameraPanel(self)   
         bSizer3.Add( self.cameraPanel, 0, wx.ALL | wx.EXPAND, 5 )
+
+        self.importPanel = ImportScreen.ImportPanel(self)   
+        bSizer3.Add( self.importPanel, 0, wx.ALL | wx.EXPAND, 5 )
+
+        self.landingPanel.Hide()           
+        self.importPanel.Hide()        
         self.cameraPanel.Show()
+
+        self.cameraPanel.StartLiveWebcamFeed()
 
         self.SetSizer( bSizer3 )
         self.Layout()
@@ -138,7 +142,7 @@ class MainWindow( wx.Frame ):
         if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
             self.dictImgOCR = OrderedDict()
 
-            img_wildcard = "PNG and GPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
+            img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
             image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
             
             if image_dlg.ShowModal( ) == wx.ID_OK:
@@ -165,10 +169,7 @@ class MainWindow( wx.Frame ):
                 if len(lstImages) > 0:
                     #perform Google OCR
                     
-                    max_count = 100 / len(lstImages)
-                    val = 0
                     for img in lstImages:
-                        val = val + max_count
                         imgOCRText = googleOCR.performGoogleOCR(img)
                         #print(imgOCRText)
                         imgName = os.path.splitext(os.path.basename(img))[0]
@@ -176,6 +177,20 @@ class MainWindow( wx.Frame ):
 
                         if IsPDFSelected:
                             os.remove(img)
+                else:
+                    for pdf in lstSelectedFiles:
+                        objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                        noOfPages = objPdf.numPages
+                        for page in objPdf.pages: 
+                            pageText = page.extractText()
+                            
+                            while True:
+                                no = random.randint(1,200)
+                                if no not in self.dictImgOCR.keys():
+                                    self.dictImgOCR[str(no)] = pageText
+                                    break
+                                else:
+                                    continue
 
                     
                     if self.cameraPanel.IsShown():
@@ -265,7 +280,8 @@ class MainWindow( wx.Frame ):
 
             return lstImages
         except :
-            print("Not Supported PDF File - PyPDF2 Error")
+            return lstImages
+
 
 if __name__ == '__main__':
     app = wx.App(False)
