@@ -109,7 +109,7 @@ class SettingsDialog ( wx.Dialog ):
 		bSizer11.AddStretchSpacer(1)
 		bSizer11.AddStretchSpacer(1)
 		
-		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnCancel = wx.Button( self, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.btnCancel.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		self.btnCancel.Bind( wx.EVT_BUTTON, self.onCancel )
 		
