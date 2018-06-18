@@ -126,7 +126,7 @@ class NavigateDialog ( wx.Dialog ):
 		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnCancel = wx.Button( self, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer4.Add( self.btnCancel, 0, wx.ALL, 5 )
 		self.btnCancel.Bind( wx.EVT_BUTTON, self.OnClose )
 		
