@@ -23,9 +23,8 @@ class CameraPanel( wx.Panel ):
         self.parent_frame = parent
 
         self.BuildInterface()
-        self.StartLiveWebcamFeed()
         self.Layout()
-        
+
     def BuildInterface( self ):
         main_sizer = wx.BoxSizer( wx.HORIZONTAL )
         right_sizer = wx.BoxSizer( wx.VERTICAL )
@@ -44,7 +43,7 @@ class CameraPanel( wx.Panel ):
         panel.SetBackgroundColour( wx.BLACK )
         back_btn_sizer = wx.BoxSizer( wx.HORIZONTAL )
         st_txt_back = wx.StaticText( panel, -1, 'Back', style = wx.ALIGN_CENTRE_HORIZONTAL )
-        panel.Bind( wx.EVT_LEFT_DOWN, self.onClose )
+        # panel.Bind( wx.EVT_LEFT_DOWN, self.onClose )
         st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.onBack )
         st_txt_back.SetForegroundColour( wx.WHITE )
         font_back = st_txt_back.GetFont( )
@@ -81,51 +80,74 @@ class CameraPanel( wx.Panel ):
         self.SetSizer( main_sizer )
         self.Layout( )
 
-        """ Bind a custom close event (needed for Windows) """
-        self.Bind(wx.EVT_CLOSE, self.onClose)        
-
     def StartLiveWebcamFeed( self ):
-        self.noOfCam = self.getConnectedCams()
+        # self.noOfCam = self.getConnectedCams()
         camId = 0
         #print(self.noOfCam)
-        if(self.noOfCam > 1):
-            camId = 0
+        # if(self.noOfCam > 1):
+        #     camId = 0
 
-        t0 = threading.Thread(target=self.StartCam, args= (camId,))
-        t0.start()
+        self.objWebCamFeed = WebcamFeed(camId)
+        if not self.objWebCamFeed.has_webcam():
+            print ('Webcam has not been detected.')
+            self.Close()           
 
-    def StartCam (self,camID):
-        self.vc = cv2.VideoCapture(camID)
-        cv2.namedWindow("Camera Window")
-        if self.vc.isOpened(): 
-                rval,  frame  = self.vc.read()
-        else:
-                rval  = False
+        """ Creates a 30 fps timer for the update loop """
+        self.timer = wx.Timer(self)
+        self.timer.Start(1000./30.)
+        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
+        self.updating = False
+        
+        """ Bind custom paint events """
+        self.m_panelVideo.Bind(wx.EVT_ERASE_BACKGROUND, self.onEraseBackground)              
+        self.m_panelVideo.Bind(wx.EVT_PAINT, self.onPaint)
+        
+        """ App states """
+        self.STATE_RUNNING = 1
+        self.STATE_CLOSING = 2
+        self.state = self.STATE_RUNNING   
 
-        while rval:
-                cv2.imshow("Camera Window", frame)
-                rval, frame = self.vc.read()
-                key = cv2.waitKey(1)
-                if key == 27: # exit on ESC
-                    break
-
-        self.vc.release() 
-        cv2.destroyAllWindows()
+    """ Main Update loop that calls the Paint function """
+    def onUpdate(self, event):
+        if self.state == self.STATE_RUNNING:
+            # fw, fh = self.m_panelVideo.GetSize()
+            # x, y = self.m_panelVideo.GetPosition()
+            # print(str(fw) + "---" + str(fh))
+            # print(str(x) + "---" + str(y))
+            # r = wx.Rect(x,y,fw,fh)
+            # self.Refresh(rect = r)           
+            self.m_panelVideo.Refresh()
+            # self.Refresh()
+    
+    """ Retrieves a new webcam image and paints it onto the frame """
+    def onPaint(self, event):
+        fw, fh = self.m_panelVideo.GetSize()
+        # Retrieve a scaled image from the opencv model
+        frame = self.objWebCamFeed.get_image(fw, fh)
+        h, w = frame.shape[:2]
+        image = wx.Bitmap.FromBuffer(w, h, frame) 
+        
+        # Use Buffered Painting to avoid flickering
+        dc = wx.BufferedPaintDC(self.m_panelVideo)
+        dc.DrawBitmap(image, 0, 0)    
+    
+    """ Background will never be erased, this avoids flickering """
+    def onEraseBackground(self, event):
+        return
 
     #put here the code for button "Take Photo"
     def TakePhoto( self, evt ):
         if self.IsShown():
-            if self.vc.isOpened():
-                _,img = self.vc.read()
+            img = self.objWebCamFeed.read()
 
-                workDir = os.path.join(os.getcwd(),"pics")
-                if not os.path.exists(workDir):
-                    os.makedirs(workDir)        
-                
-                imgName = str(GetNewImageName()) + ".png"
+            workDir = os.path.join(os.getcwd(),"pics")
+            if not os.path.exists(workDir):
+                os.makedirs(workDir)        
+            
+            imgName = str(GetNewImageName()) + ".png"
 
-                imgPath = os.path.join(workDir,imgName)
-                cv2.imwrite(imgPath,img)
+            imgPath = os.path.join(workDir,imgName)
+            cv2.imwrite(imgPath,img)
         
     #put here the code for button "Done"
     def Done( self, evt ):
@@ -135,8 +157,9 @@ class CameraPanel( wx.Panel ):
                 if t.name == "TimerThread":
                     t.cancel()
                     break   
-            cv2.destroyAllWindows()
-            self.vc.release()           
+            
+            self.objWebCamFeed.release()                                    
+            # self.EndModal(1)  
 
             self.parent_frame.dictImgOCR = OrderedDict()
             self.parent_frame.dictImgOCR = self.GetAllImageFiles()
@@ -151,21 +174,12 @@ class CameraPanel( wx.Panel ):
     #put here the code for button "Set Timer"
     def SetTimer( self, evt ):
         if self.IsShown():
-            dlg = TimerDialog(self,self.vc)
+            dlg = TimerDialog(self,self.objWebCamFeed)
             dlg.Show()
         	
-    def onClose( self, evt ):
-        if self.vc.isOpened():
-            self.vc.release()
-            cv2.destroyAllWindows()
-            
-        self.Destroy()
-
     def onBack( self, evt ):
-        if self.vc.isOpened():
-            self.vc.release()
-            cv2.destroyAllWindows()
-        
+        self.objWebCamFeed.release() 
+                   
         self.Hide()
         self.parent_frame.landingPanel.Show()
         self.parent_frame.Layout()
@@ -189,12 +203,8 @@ class CameraPanel( wx.Panel ):
             lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
 
             if(len(lstAllPNGFiles) > 0):
-                max_count = 100 / len(lstAllPNGFiles)
-                val = 0
                 
                 for p in lstAllPNGFiles:
-                    val = val + max_count
-                    #self.gauge.SetValue(val)
                     imgName = p.split('.')[0]
                     imgFullPath = os.path.join(workDir,p)
                     if imgName not in d.keys():
@@ -202,7 +212,6 @@ class CameraPanel( wx.Panel ):
                         #print(imgOCRText)
                         d[imgName] = imgOCRText
 
-                #self.gauge.SetValue(0)
 
             if SettingsData.IsSaveImages == "No":
                 shutil.rmtree(workDir)
@@ -305,7 +314,7 @@ class TimerDialog( wx.Dialog ):
                 wx.MessageBox("Please enter correct value.")  
 
     def capture(self,t):
-        _,img = self.objTimerWebCam.read()
+        img = self.objTimerWebCam.read()
 
         workDir = os.path.join(os.getcwd(),"pics")
         if not os.path.exists(workDir):
@@ -338,20 +347,6 @@ def GetNewImageName():
     else:
         return max(lstFiles) + 1            
 
-# def GetAllImageFiles():
-#     workDir = os.path.join(os.getcwd(),"pics")
-
-#     lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png','jpg')]
-
-#     d = OrderedDict()
-
-#     for p in lstAllPNGFiles:
-#         imgName = p.split('.')[0]
-#         imgFullPath = os.path.join(workDir,p)
-#         if imgName not in d.keys():
-#             d[imgName] = imgFullPath
-
-#     return d
 
 if __name__ == '__main__':
     app = wx.App(False)
