@@ -43,6 +43,8 @@ class MainWindow( wx.Frame ):
         self.Layout()
         self.Centre( wx.BOTH )   
 
+        self.Bind(wx.EVT_CLOSE, self.onClose)        
+
         self.SetShortCut() 
 
     def CreateMenu( self ):
@@ -94,6 +96,12 @@ class MainWindow( wx.Frame ):
             wx.MessageBox( 'Navigation Options' )
         elif menu_id == wx.ID_HELP:
             wx.MessageBox( 'Help' )
+
+    def onClose( self, evt ):
+        if self.cameraPanel.IsShown():
+            self.cameraPanel.objWebCamFeed.release()
+
+        self.DestroyLater()
 
     def SetShortCut(self):
         importID = wx.NewId()

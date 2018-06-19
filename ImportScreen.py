@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import re
-import wx, os
+import wx, os, pdfkit
 import wx.html2
 from ExportDialog import ExportDialog
 from Settings import SettingsDialog
@@ -255,6 +255,11 @@ class ImportPanel( wx.Panel ):
                     
             dlg.Destroy()
 
+            # dlg = ExportDialog( self, html, txt )
+            # dlg.CentreOnScreen( )
+            # dlg.Fit( )
+            # dlg.ShowModal( )
+
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
         if self.IsShown():
@@ -277,7 +282,3 @@ class ImportPanel( wx.Panel ):
             self.parent_frame.cameraPanel.Hide()
         self.parent_frame.landingPanel.Show()
         self.parent_frame.Layout()
-
-    def OnClose( self, evt ):
-        #self.EndModal( -1 )
-        self.Destroy( )
