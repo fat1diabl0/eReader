@@ -82,11 +82,22 @@ class CameraPanel( wx.Panel ):
         self.Layout( )
 
     def StartLiveWebcamFeed( self ):
-        # self.noOfCam = self.getConnectedCams()
-        camId = 0
-        #print(self.noOfCam)
+        self.noOfCam = self.getConnectedCams()
+
+        if self.noOfCam == 1:
+            camId = 0
+        elif self.noOfCam > 1:
+            if SettingsData.PreferredScanner == "USB Cam":
+                camId = 0
+            elif SettingsData.PreferredScanner == "Web Cam":
+                camId = 1
+        else:
+            camId = 0
+
+        
         # if(self.noOfCam > 1):
-        #     camId = 0
+        #     print(self.noOfCam)
+        #     camId = 1
 
         self.objWebCamFeed = WebcamFeed(camId)
         if not self.objWebCamFeed.has_webcam():
@@ -186,7 +197,7 @@ class CameraPanel( wx.Panel ):
         self.parent_frame.Layout()
 
     def getConnectedCams(self):
-        max_tested = 100
+        max_tested = 10
         for i in range(max_tested):
             temp_camera = cv2.VideoCapture(i)
             if temp_camera.isOpened():
