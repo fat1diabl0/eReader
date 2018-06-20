@@ -155,10 +155,6 @@ class MainWindow( wx.Frame ):
             
             if image_dlg.ShowModal( ) == wx.ID_OK:
                 
-                if self.cameraPanel.vc.isOpened(): 
-                    self.cameraPanel.vc.release()  
-                    cv2.destroyAllWindows()
-
                 lstSelectedFiles = image_dlg.GetPaths( )
 
                 lstImages = []
