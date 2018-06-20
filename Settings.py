@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*- 
 
 import wx
+import cv2
 import wx.xrc
 import SettingsData
 
@@ -59,10 +60,23 @@ class SettingsDialog ( wx.Dialog ):
 		bSizer3.Add( bSizer8, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.BOTTOM|wx.RIGHT, 5 )
 		
 		bSizer12 = wx.BoxSizer( wx.VERTICAL )
-		
+
 		choScannerChoices = []
+		
+		self.noOfCam = self.getConnectedCams()
+		# print(self.noOfCam)
+		if self.noOfCam  > 1:
+			choScannerChoices.append("USB Cam")
+			choScannerChoices.append("Web Cam")
+		else:
+			choScannerChoices.append("Web Cam")
+			
 		self.choScanner = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choScannerChoices, 0 )
-		self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
+		if self.noOfCam > 1:
+			self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
+		else:
+			self.choScanner.SetStringSelection("Web Cam")
+			
 		self.choScanner.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
 		
 		bSizer12.Add( self.choScanner, 1, wx.ALL, 1 )
@@ -136,6 +150,15 @@ class SettingsDialog ( wx.Dialog ):
 	def __del__( self ):
 		pass
 
+	def getConnectedCams(self):
+		max_tested = 10
+		for i in range(max_tested):
+			temp_camera = cv2.VideoCapture(i)
+			if temp_camera.isOpened():
+				temp_camera.release()
+				continue
+			return i 
+
 	def onSelectFont(self,evt):
 		btnLabel = self.btnFontPicker.GetLabel()
 		fgColor = self.btnFontPicker.GetForegroundColour()
@@ -184,6 +207,3 @@ class SettingsDialog ( wx.Dialog ):
 
 	def onCancel(self,evt):
 		self.Destroy( )
-
-
-	
