@@ -98,6 +98,7 @@ class LandingPanel( wx.Panel ):
         self.parent_frame.Layout()
 
         self.parent_frame.cameraPanel.StartLiveWebcamFeed()      
+        
 
     #put here code for button "Import"
     def OnImportBtnClick( self, evt ):

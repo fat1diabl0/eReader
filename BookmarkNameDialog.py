@@ -9,6 +9,7 @@
 
 import wx
 import wx.xrc
+import re
 
 
 class BookmarkDialog ( wx.Dialog ):
@@ -79,6 +80,26 @@ class BookmarkDialog ( wx.Dialog ):
 				else:
 					self.ImportScreen.dictBookmarkData[strBMName] = (strPageName,strSelectedText)
 					self.ImportScreen.html_widget.ClearSelection()
+
+
+					strPageSource = self.ImportScreen.html_widget.GetPageSource()
+					# print(strPageSource.encode("utf-8"))
+
+					charBefore = (strPageSource.partition(strSelectedText)[0].strip())[-1]
+					charAfter  = (strPageSource.partition(strSelectedText)[2].strip())[0]
+					# print(charBefore)
+					# print(charAfter)
+
+					if charBefore != '>' and charAfter != '<':
+						strReplace = r"</p> <p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p><p>"
+
+					# strReplace = r"<p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p>"
+					result = str.replace(strPageSource,strSelectedText,strReplace,1)
+					# print(result.encode("utf-8"))
+					self.ImportScreen.parent_frame.dictImgOCR[strPageName] = result
+
+					# print(re.findall(r"(?i)"+strSelectedText, strPageSource))
+
 					self.Destroy()
 					
 		else:

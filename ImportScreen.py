@@ -126,7 +126,7 @@ class ImportPanel( wx.Panel ):
     def UpdateHTMLPage(self,btnName):
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"> ' + self.parent_frame.dictImgOCR[btnName] +'</body></html>'
+        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + self.parent_frame.dictImgOCR[btnName] +' </p></body></html>'
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
