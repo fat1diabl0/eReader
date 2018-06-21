@@ -97,6 +97,7 @@ class BookmarkDialog ( wx.Dialog ):
 					result = str.replace(strPageSource,strSelectedText,strReplace,1)
 					# print(result.encode("utf-8"))
 					self.ImportScreen.parent_frame.dictImgOCR[strPageName] = result
+					self.ImportScreen.UpdateHTMLPage(strPageName)
 
 					# print(re.findall(r"(?i)"+strSelectedText, strPageSource))
 
