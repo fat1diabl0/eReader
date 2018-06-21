@@ -248,7 +248,7 @@ class ImportPanel( wx.Panel ):
 
                 if wildcardIndex == 0 or wildcardIndex == 1:
                     with open(fullPath, 'w' ) as f:
-                        f.write(pageText)   
+                        f.write(html)   
                 elif wildcardIndex == 2:
                     html = re.sub( '<body.+?>','<body style="font-size:20px;">', pageText, 1, re.IGNORECASE  )
                     pdfkit.from_string(html, fullPath)
