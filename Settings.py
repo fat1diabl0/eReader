@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*- 
 
+import os
 import wx
 import cv2
 import wx.xrc
@@ -123,7 +124,7 @@ class SettingsDialog ( wx.Dialog ):
 		bSizer11.AddStretchSpacer(1)
 		bSizer11.AddStretchSpacer(1)
 		
-		self.btnCancel = wx.Button( self, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.btnCancel.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		self.btnCancel.Bind( wx.EVT_BUTTON, self.onCancel )
 		
@@ -146,6 +147,31 @@ class SettingsDialog ( wx.Dialog ):
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
+
+		settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
+		if os.path.exists(settingsFilePath):
+			with open(settingsFilePath,'r') as f:
+				lines = f.readlines()
+				for l in lines:
+					fields = l.split(':')
+					if fields[0] == "PreferredScanner":
+						SettingsData.PreferredScanner = fields[1].strip()
+					elif fields[0] == "Font":
+						SettingsData.Font = fields[1].strip()
+					elif fields[0] == "FontSize":
+						SettingsData.FontSize = fields[1].strip()
+					elif fields[0] == "FontColor":
+						c = wx.Colour(int(fields[1].strip()))
+						SettingsData.FontColor = c
+					elif fields[0] == "IsSaveImages":
+						SettingsData.IsSaveImages = fields[1].strip()
+
+
+		self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
+		self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
+		self.btnFontPicker.SetForegroundColour(SettingsData.FontColor)
+		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
+
 	
 	def __del__( self ):
 		pass
@@ -203,7 +229,19 @@ class SettingsDialog ( wx.Dialog ):
 		SettingsData.FontSize 		= int(pntSize)
 		SettingsData.FontColor 		= fgColor
 
+		settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
+		
+		with open(settingsFilePath,'w') as f:
+			f.write("PreferredScanner:"+SettingsData.PreferredScanner+"\n")
+			f.write("Font:"+SettingsData.Font+"\n")
+			f.write("FontSize:"+str(SettingsData.FontSize)+"\n")
+			f.write("FontColor:"+str(SettingsData.FontColor.GetRGB())+"\n")
+			f.write("IsSaveImages:"+SettingsData.IsSaveImages+"\n")
+
 		self.Destroy()
 
 	def onCancel(self,evt):
 		self.Destroy( )
+
+
+	
