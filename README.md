@@ -6,16 +6,45 @@
 
 ## Run python3 or py LandingScreen.py to run the whole project
 
-## Milestone 2 task
-### From Camera
-* When photos are done and done button is pressed Google OCR is performed on all those images in sequence
-* A processing alert should be displayed during the whole OCR processing.
-* The output is displayed in ImportScreen.py in the same order as the photos. So 1st image's OCR results are displayed in page 1, the 2nd image's OCR are displayed in page 2, etc. 
-* User should be able to see all the outputs for all imgages by clicking on the next button(based on GUI sketch)
+## Milestone 5 updates
+* Prirority 1: Please implement the following changes
 
-### From import button
-* User should be able to select multiple images from the open file dialog when he presses the import screen.
-* Google OCR should be called on all those images and processing alert should be displayed
-* The output is displayed on the screen in a similar way to the camera output. 
+1. The buttons on the main screen are still not properly labeled. When I come across these buttons with the tab key, they read as button. Please prioritize a fix for this as soon as possible. As Mario said, accessibility is very important for us, and the current version doesn’t meet accessibility standards.
+ 
+
+Note that it is very important to use the correct declaration order for wx objects. E.g. this is bad:
+
+cameraButton = wx.Button(...)
+
+cameraLabel = wx.StaticText(..., label="camera")
+
+otherButton = wx.Button(...)
+
+otherLabel = wx.StaticText(..., label="cother")
+
+ 
+
+You should always declare the label before the object that needs to be associated with the label (i.e. a button, slider, etc.) E.g.
+
+cameraLabel = wx.StaticText(..., label="camera")
+
+cameraButton = wx.Button(...)
+
+otherLabel = wx.StaticText(..., label="cother")
+
+otherButton = wx.Button(...)
+
+ 
+
+b. It seems you are using a custom dialog for the save window. Is there a particular reason why you’re not using wx.FileSelector?
+ 
+
+c. Please make the navigate, export and settings dialogs close with escape.
+
+
+* Priority 2: Camera functionality setup + PDF import.
+
+* Priority 3: Headings and bookmarks. 
+
 
 

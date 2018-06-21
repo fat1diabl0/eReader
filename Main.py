@@ -54,7 +54,9 @@ class MainWindow( wx.Frame ):
         menu_item = wx.MenuItem( file_menu,wx.ID_OPEN, text = "&Import",kind = wx.ITEM_NORMAL )
 
         file_menu.Append( menu_item )
+
         menu_item = wx.MenuItem( file_menu,wx.ID_SAVEAS, text = "&Export",kind = wx.ITEM_NORMAL )
+
         file_menu.Append( menu_item )
         menu_item = wx.MenuItem( file_menu,wx.ID_EXIT, text = "&Quit",kind = wx.ITEM_NORMAL )
         file_menu.Append( menu_item )
@@ -65,8 +67,10 @@ class MainWindow( wx.Frame ):
         menu_item = wx.MenuItem( navigation_menu,self.bookmarkID, text = "&Bookmark",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
 
+
         self.headingID = wx.NewId()
         menu_item = wx.MenuItem( navigation_menu,self.headingID, text = "H&eadings",kind = wx.ITEM_NORMAL )
+
         navigation_menu.Append( menu_item )
         menu_item = wx.MenuItem( navigation_menu,wx.ID_FIND, text = "&Find",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
