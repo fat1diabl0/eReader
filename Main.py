@@ -107,16 +107,16 @@ class MainWindow( wx.Frame ):
         if self.cameraPanel.IsShown():
             self.cameraPanel.objWebCamFeed.release()
 
-        # if self.importPanel.IsShown():
-        #     if len(self.importPanel.dictBookmarkData.keys()) > 0:
+        if self.importPanel.IsShown():
+            if len(self.importPanel.dictBookmarkData.keys()) > 0:
 
-        #         ret = wx.MessageBox("You have created bookmark. Do you want to save?",style=wx.YES_NO)
-        #         if ret == 2:
-        #             evt.Veto()
-        #             self.importPanel.ExportText(evt)
-        #             return
-        #         else:
-        #             self.DestroyLater()
+                ret = wx.MessageBox("You have created bookmark. Do you want to save?",style=wx.YES_NO)
+                if ret == 2:
+                    evt.Veto()
+                    self.importPanel.ExportText(evt)
+                    return
+                else:
+                    self.DestroyLater()
 
         self.DestroyLater()        
 
