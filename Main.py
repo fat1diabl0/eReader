@@ -54,25 +54,28 @@ class MainWindow( wx.Frame ):
         menu_item = wx.MenuItem( file_menu,wx.ID_OPEN, text = "&Import",kind = wx.ITEM_NORMAL )
 
         file_menu.Append( menu_item )
-        menu_item = wx.MenuItem( file_menu,wx.ID_ADD, text = "Export",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( file_menu,wx.ID_SAVEAS, text = "&Export",kind = wx.ITEM_NORMAL )
         file_menu.Append( menu_item )
-        menu_item = wx.MenuItem( file_menu,wx.ID_EXIT, text = "Quit",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( file_menu,wx.ID_EXIT, text = "&Quit",kind = wx.ITEM_NORMAL )
         file_menu.Append( menu_item )
         menu_bar.Append( file_menu, '&File' )
 
         navigation_menu = wx.Menu( )
-        menu_item = wx.MenuItem( navigation_menu,wx.ID_ANY, text = "&Bookmark",kind = wx.ITEM_NORMAL )
+        self.bookmarkID = wx.NewId()
+        menu_item = wx.MenuItem( navigation_menu,self.bookmarkID, text = "&Bookmark",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
-        menu_item = wx.MenuItem( navigation_menu,wx.ID_ANY, text = "Headings",kind = wx.ITEM_NORMAL )
+
+        self.headingID = wx.NewId()
+        menu_item = wx.MenuItem( navigation_menu,self.headingID, text = "H&eadings",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
-        menu_item = wx.MenuItem( navigation_menu,wx.ID_ANY, text = "&Find",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( navigation_menu,wx.ID_FIND, text = "&Find",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
         menu_bar.Append( navigation_menu, '&Navigation' )
 
         help_menu = wx.Menu( )
-        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "Manual",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Manual",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
-        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "Report a Bug",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Report a Bug",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
 
         menu_bar.Append( help_menu, '&Help' )
@@ -85,23 +88,37 @@ class MainWindow( wx.Frame ):
         menu_id = evt.GetId( )
         if menu_id == wx.ID_OPEN:
             self.onImport(evt)
-        elif menu_id == wx.ID_ADD:
+        elif menu_id == wx.ID_SAVEAS:
             self.importPanel.ExportText(evt)
-            # wx.MessageBox( 'Export to PDF/HTML/RTF' )
         elif menu_id == wx.ID_EXIT:
-            self.Close()
+            self.onClose(evt)
         elif menu_id == wx.ID_NEW:
-            wx.MessageBox( 'Navigation' )
-        elif menu_id == wx.ID_ANY:
-            wx.MessageBox( 'Navigation Options' )
+            self.importPanel.NavigateText(evt)
+        elif menu_id == wx.ID_FIND:
+            self.importPanel.onFindShortCut(evt)           
         elif menu_id == wx.ID_HELP:
             wx.MessageBox( 'Help' )
+        elif menu_id == self.bookmarkID:
+            self.importPanel.onBookmarkShortCut(evt)
+        elif menu_id == self.headingID:
+            wx.MessageBox( 'Headings' )            
 
     def onClose( self, evt ):
         if self.cameraPanel.IsShown():
             self.cameraPanel.objWebCamFeed.release()
 
-        self.DestroyLater()
+        # if self.importPanel.IsShown():
+        #     if len(self.importPanel.dictBookmarkData.keys()) > 0:
+
+        #         ret = wx.MessageBox("You have created bookmark. Do you want to save?",style=wx.YES_NO)
+        #         if ret == 2:
+        #             evt.Veto()
+        #             self.importPanel.ExportText(evt)
+        #             return
+        #         else:
+        #             self.DestroyLater()
+
+        self.DestroyLater()        
 
     def SetShortCut(self):
         importID = wx.NewId()
@@ -155,13 +172,15 @@ class MainWindow( wx.Frame ):
             
             if image_dlg.ShowModal( ) == wx.ID_OK:
                 
+                # if self.cameraPanel.vc.isOpened(): 
+                #     self.cameraPanel.vc.release()  
+                #     cv2.destroyAllWindows()
+
                 lstSelectedFiles = image_dlg.GetPaths( )
 
                 lstImages = []
-                IsPDFSelected = False
                 fname,fext = os.path.splitext(lstSelectedFiles[0])
                 if fext == '.pdf':
-                    IsPDFSelected = True
                     fPath = os.path.dirname(fname)
                     lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
                     #print(lstImages)
@@ -175,12 +194,10 @@ class MainWindow( wx.Frame ):
                     
                     for img in lstImages:
                         imgOCRText = googleOCR.performGoogleOCR(img)
-                        #print(imgOCRText)
+                        # print(imgOCRText)
                         imgName = os.path.splitext(os.path.basename(img))[0]
                         self.dictImgOCR[imgName] = imgOCRText
 
-                        if IsPDFSelected:
-                            os.remove(img)
                 else:
                     for pdf in lstSelectedFiles:
                         objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
@@ -197,14 +214,14 @@ class MainWindow( wx.Frame ):
                                     continue
 
                     
-                    if self.cameraPanel.IsShown():
-                        self.cameraPanel.Hide()
-                    if self.landingPanel.IsShown():
-                        self.landingPanel.Hide()
+                if self.cameraPanel.IsShown():
+                    self.cameraPanel.Hide()
+                if self.landingPanel.IsShown():
+                    self.landingPanel.Hide()
 
-                    self.importPanel.Show()
-                    self.importPanel.LoadHTMLPage()
-                    self.Layout()
+                self.importPanel.Show()
+                self.importPanel.LoadHTMLPage()
+                self.Layout()
             
             image_dlg.Destroy( )            
 
