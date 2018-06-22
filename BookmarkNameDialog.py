@@ -91,7 +91,9 @@ class BookmarkDialog ( wx.Dialog ):
 					# print(charAfter)
 
 					if charBefore != '>' and charAfter != '<':
-						strReplace = r"</p> <p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p><p>"
+						#strReplace = r"</p> <p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p><p>"
+						#strReplace = r"</p> <div aria-label="+strBMName+" role=navigation> "+strSelectedText+" </div><p>"
+						strReplace = r"</p> <span aria-label="+strBMName+" role=navigation> "+strSelectedText+" </span><p>"
 
 					# strReplace = r"<p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p>"
 					result = str.replace(strPageSource,strSelectedText,strReplace,1)
