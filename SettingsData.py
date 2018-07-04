@@ -5,12 +5,14 @@ Default_Font = "Helvetica"
 Default_FontSize = 24
 Default_FontColor = wx.BLACK
 Default_IsSaveImages = "No"
+Default_OCRMethod = "OmniPage"
 
 PreferredScanner = "USB Cam"
 Font = "Helvetica"
 FontSize = 24
 FontColor = wx.BLACK
 IsSaveImages = "No"
+OCRMethod = "Google"
 
 
 #HOT Key Settings
