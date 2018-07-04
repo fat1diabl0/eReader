@@ -9,7 +9,7 @@ import SettingsData
 class SettingsDialog ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Envision Reader", pos = wx.DefaultPosition, size = wx.Size( 520,260 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Envision Reader", pos = wx.DefaultPosition, size = wx.Size( 520,320 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
@@ -57,6 +57,13 @@ class SettingsDialog ( wx.Dialog ):
 		
 		bSizer8.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL|wx.BOTTOM, 5 )
 		
+		bSizer8.AddStretchSpacer(1)
+		
+		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, u"Select OCR Method:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText5.Wrap( -1 )
+		self.m_staticText5.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+		
+		bSizer8.Add( self.m_staticText5, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )		
 		
 		bSizer3.Add( bSizer8, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.BOTTOM|wx.RIGHT, 5 )
 		
@@ -99,6 +106,15 @@ class SettingsDialog ( wx.Dialog ):
 		
 		bSizer12.Add( self.choSaveImages, 0, wx.ALL, 1 )
 		
+		bSizer12.AddStretchSpacer(1)
+		
+		choOCRMethodChoices = [ u"OmniPage", u"Google"]
+		self.choOCRMethod = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choOCRMethodChoices, 0 )
+		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
+		self.choOCRMethod.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+		
+		bSizer12.Add( self.choOCRMethod, 0, wx.ALL, 1 )
+
 		bSizer3.Add( bSizer12, 1, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5 )
 		
 		
@@ -165,12 +181,14 @@ class SettingsDialog ( wx.Dialog ):
 						SettingsData.FontColor = c
 					elif fields[0] == "IsSaveImages":
 						SettingsData.IsSaveImages = fields[1].strip()
-
+					elif fields[0] == "OCRMethod":
+						SettingsData.OCRMethod = fields[1].strip()
 
 		self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
 		self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
 		self.btnFontPicker.SetForegroundColour(SettingsData.FontColor)
 		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
+		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
 
 	
 	def __del__( self ):
@@ -209,16 +227,19 @@ class SettingsDialog ( wx.Dialog ):
 		self.btnFontPicker.SetLabel(SettingsData.Default_Font + ',' + str(SettingsData.Default_FontSize))
 		self.btnFontPicker.SetForegroundColour(SettingsData.Default_FontColor)
 		self.choSaveImages.SetStringSelection( SettingsData.Default_IsSaveImages )
+		self.choOCRMethod.SetStringSelection( SettingsData.Default_OCRMethod )
 
 		SettingsData.PreferredScanner = SettingsData.Default_PreferredScanner	
 		SettingsData.Font = SettingsData.Default_Font	
 		SettingsData.FontSize = SettingsData.Default_FontSize	
 		SettingsData.FontColor = SettingsData.Default_FontColor
 		SettingsData.IsSaveImages = SettingsData.Default_IsSaveImages	
+		SettingsData.OCRMethod = SettingsData.Default_OCRMethod	
 
 	def onSave(self,evt):
 		SettingsData.PreferredScanner 	= self.choScanner.GetStringSelection()
 		SettingsData.IsSaveImages 		= self.choSaveImages.GetStringSelection()
+		SettingsData.OCRMethod 		= self.choOCRMethod.GetStringSelection()
 
 		btnLabel = self.btnFontPicker.GetLabel()
 		fgColor = self.btnFontPicker.GetForegroundColour()
@@ -237,6 +258,7 @@ class SettingsDialog ( wx.Dialog ):
 			f.write("FontSize:"+str(SettingsData.FontSize)+"\n")
 			f.write("FontColor:"+str(SettingsData.FontColor.GetRGB())+"\n")
 			f.write("IsSaveImages:"+SettingsData.IsSaveImages+"\n")
+			f.write("OCRMethod:"+SettingsData.OCRMethod+"\n")
 
 		self.Destroy()
 
