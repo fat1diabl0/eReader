@@ -1,9 +1,11 @@
 try:
     import clr
-except:
+    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.ArgTypes.dll")
+    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.Objects.dll")
+    from Nuance.OmniPage.CSDK.Objects import SettingCollection, Page, Image, Engine, ImageFile
+    from Nuance.OmniPage.CSDK.ArgTypes import RecAPIConstants, IMG_CONVERSION, DTXTOUTPUTFORMATS, IMAGEINDEX
+except ImportError:
     print("CLR Failed")
-# clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.ArgTypes.dll")
-# clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.Objects.dll")
 import wx, os, random
 import cv2
 import CameraScreen
@@ -11,12 +13,9 @@ import LandingScreen
 import ImportScreen
 from collections import OrderedDict
 from backend import googleOCR
+import Settings
 import SettingsData
 import PyPDF2
-# clr.AddReference('System')
-# clr.AddReference('System.Windows.Forms')
-# from Nuance.OmniPage.CSDK.Objects import SettingCollection, Page, Image, Engine, ImageFile
-# from Nuance.OmniPage.CSDK.ArgTypes import RecAPIConstants, IMG_CONVERSION, DTXTOUTPUTFORMATS, IMAGEINDEX
 
 class MainWindow( wx.Frame ):
     def __init__( self ):
@@ -200,13 +199,15 @@ class MainWindow( wx.Frame ):
                     
                     for img in lstImages:
                         # imgOCRText = googleOCR.performGoogleOCR(img)
-
+                        # print(img)
+                        # print(SettingsData.OCRMethod)
                         if SettingsData.OCRMethod == "Google":
                             imgOCRText = googleOCR.performGoogleOCR(img)
+                            # print(imgOCRText)    
                         else:
                             imgOCRText = self.OCRByOmniPageMethod(img)
-                        
-                        # print(imgOCRText)
+                            # print(imgOCRText)
+
                         imgName = os.path.splitext(os.path.basename(img))[0]
                         self.dictImgOCR[imgName] = imgOCRText
 
@@ -325,7 +326,7 @@ class MainWindow( wx.Frame ):
         page = Page(strInput, RecAPIConstants.IMGF_FIRSTPAGE, settings)
         page.Preprocess()
         page.Recognize()
-
+        
         settings.DTXTOutputformat = DTXTOUTPUTFORMATS.DTXT_TXTS
         page.Convert2DTXT(strOutput)
         
