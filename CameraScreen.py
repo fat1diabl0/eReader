@@ -61,17 +61,16 @@ class CameraPanel( wx.Panel ):
 
         for img_path, label, func in buttons:
             #image button
-            btn_txt = wx.StaticText( self, -1, label )
             img = wx.Image( os.path.join( self.parent_frame.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
             bmp = img.ConvertToBitmap( )
-            btn = wx.BitmapButton( self, -1, bmp, style=wx.NO_BORDER)
+            btn = wx.BitmapButton( self, -1, bmp, style=wx.NO_BORDER )
             btn.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
             btn.SetBackgroundColour( wx.BLACK )
             btn.Bind( wx.EVT_BUTTON, func )
             left_sizer.Add( btn, 0, wx.TOP | wx.ALIGN_CENTER, 60 )
 
             #label button
-            #btn_txt = wx.StaticText( self, -1, label )
+            btn_txt = wx.StaticText( self, -1, label )
             btn_txt.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
             btn_txt.SetForegroundColour( wx.WHITE )
             font = btn_txt.GetFont( )
@@ -83,7 +82,6 @@ class CameraPanel( wx.Panel ):
 
     def StartLiveWebcamFeed( self ):
         self.noOfCam = self.getConnectedCams()
-
         if self.noOfCam == 1:
             camId = 0
         elif self.noOfCam > 1:
@@ -113,7 +111,7 @@ class CameraPanel( wx.Panel ):
         """ Bind custom paint events """
         self.m_panelVideo.Bind(wx.EVT_ERASE_BACKGROUND, self.onEraseBackground)              
         self.m_panelVideo.Bind(wx.EVT_PAINT, self.onPaint)
-        
+
         """ App states """
         self.STATE_RUNNING = 1
         self.STATE_CLOSING = 2
@@ -197,13 +195,21 @@ class CameraPanel( wx.Panel ):
         self.parent_frame.Layout()
 
     def getConnectedCams(self):
+        # print("101")
         max_tested = 10
         for i in range(max_tested):
-            temp_camera = cv2.VideoCapture(i)
-            if temp_camera.isOpened():
-                temp_camera.release()
+            try:
+                # print(i)
+                temp_camera = cv2.VideoCapture(i)
+                # print(i)
+                if temp_camera.isOpened():
+                    temp_camera.release()
+                    continue
+            except:
                 continue
+            
             return i 
+        # print("102")
 
     def GetAllImageFiles(self):
 
@@ -220,8 +226,12 @@ class CameraPanel( wx.Panel ):
                     imgName = p.split('.')[0]
                     imgFullPath = os.path.join(workDir,p)
                     if imgName not in d.keys():
-                        imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
-                        #print(imgOCRText)
+                        # imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                        if SettingsData.OCRMethod == "Google":
+                            imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                        else:
+                            imgOCRText = self.parent_frame.OCRByOmniPageMethod(imgFullPath)                        
+                            print(imgOCRText)
                         d[imgName] = imgOCRText
 
 
