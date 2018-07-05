@@ -182,7 +182,7 @@ class SettingsDialog ( wx.Dialog ):
 					elif fields[0] == "IsSaveImages":
 						SettingsData.IsSaveImages = fields[1].strip()
 					elif fields[0] == "OCRMethod":
-						SettingsData.OCRMethod = fields[1].strip()
+						SettingsData.OCRMethod = fields[1].strip()		
 
 		self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
 		self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
