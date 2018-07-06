@@ -123,6 +123,7 @@ class ImportPanel( wx.Panel ):
         self.activeButton = btnName
 
     def UpdateHTMLPage(self,btnName):
+        # print(self.parent_frame.dictImgOCR[btnName].encode("utf-8"))
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
         html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + self.parent_frame.dictImgOCR[btnName] +' </p></body></html>'

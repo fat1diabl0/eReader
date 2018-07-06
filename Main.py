@@ -1,3 +1,11 @@
+try:
+    import clr
+    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.ArgTypes.dll")
+    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.Objects.dll")
+    from Nuance.OmniPage.CSDK.Objects import SettingCollection, Page, Image, Engine, ImageFile
+    from Nuance.OmniPage.CSDK.ArgTypes import RecAPIConstants, IMG_CONVERSION, DTXTOUTPUTFORMATS, IMAGEINDEX
+except ImportError:
+    print("CLR Failed")
 import wx, os, random
 import cv2
 import CameraScreen
@@ -5,8 +13,8 @@ import LandingScreen
 import ImportScreen
 from collections import OrderedDict
 from backend import googleOCR
+import Settings
 import SettingsData
-from Shortcuts import clsShortCuts
 import PyPDF2
 
 class MainWindow( wx.Frame ):
@@ -55,9 +63,7 @@ class MainWindow( wx.Frame ):
         menu_item = wx.MenuItem( file_menu,wx.ID_OPEN, text = "&Import",kind = wx.ITEM_NORMAL )
 
         file_menu.Append( menu_item )
-
         menu_item = wx.MenuItem( file_menu,wx.ID_SAVEAS, text = "&Export",kind = wx.ITEM_NORMAL )
-
         file_menu.Append( menu_item )
         menu_item = wx.MenuItem( file_menu,wx.ID_EXIT, text = "&Quit",kind = wx.ITEM_NORMAL )
         file_menu.Append( menu_item )
@@ -68,21 +74,15 @@ class MainWindow( wx.Frame ):
         menu_item = wx.MenuItem( navigation_menu,self.bookmarkID, text = "&Bookmark",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
 
-
         self.headingID = wx.NewId()
         menu_item = wx.MenuItem( navigation_menu,self.headingID, text = "H&eadings",kind = wx.ITEM_NORMAL )
-
         navigation_menu.Append( menu_item )
         menu_item = wx.MenuItem( navigation_menu,wx.ID_FIND, text = "&Find",kind = wx.ITEM_NORMAL )
         navigation_menu.Append( menu_item )
         menu_bar.Append( navigation_menu, '&Navigation' )
 
         help_menu = wx.Menu( )
-        self.settingsID = wx.NewId()
-        menu_item = wx.MenuItem( help_menu,self.settingsID, text = "&Settings",kind = wx.ITEM_NORMAL )
-        help_menu.Append( menu_item )
-        self.manualID = wx.NewId()
-        menu_item = wx.MenuItem( help_menu,self.manualID, text = "&Manual",kind = wx.ITEM_NORMAL )
+        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Manual",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
         menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Report a Bug",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
@@ -104,12 +104,7 @@ class MainWindow( wx.Frame ):
         elif menu_id == wx.ID_NEW:
             self.importPanel.NavigateText(evt)
         elif menu_id == wx.ID_FIND:
-            self.importPanel.onFindShortCut(evt)
-        elif menu_id == self.settingsID:
-            self.importPanel.Settings(evt)
-        elif menu_id == self.manualID:
-            dlg = clsShortCuts(self)
-            dlg.Show()           
+            self.importPanel.onFindShortCut(evt)           
         elif menu_id == wx.ID_HELP:
             wx.MessageBox( 'Help' )
         elif menu_id == self.bookmarkID:
@@ -184,12 +179,8 @@ class MainWindow( wx.Frame ):
             img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
             image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
             
-            if image_dlg.ShowModal( ) == wx.ID_OK:
+            if image_dlg.ShowModal() == wx.ID_OK:
                 
-                # if self.cameraPanel.vc.isOpened(): 
-                #     self.cameraPanel.vc.release()  
-                #     cv2.destroyAllWindows()
-
                 lstSelectedFiles = image_dlg.GetPaths( )
 
                 lstImages = []
@@ -207,8 +198,16 @@ class MainWindow( wx.Frame ):
                     #perform Google OCR
                     
                     for img in lstImages:
-                        imgOCRText = googleOCR.performGoogleOCR(img)
-                        # print(imgOCRText)
+                        # imgOCRText = googleOCR.performGoogleOCR(img)
+                        # print(img)
+                        # print(SettingsData.OCRMethod)
+                        if SettingsData.OCRMethod == "Google":
+                            imgOCRText = googleOCR.performGoogleOCR(img)
+                            # print(imgOCRText)    
+                        else:
+                            imgOCRText = self.OCRByOmniPageMethod(img)
+                            # print(imgOCRText)
+
                         imgName = os.path.splitext(os.path.basename(img))[0]
                         self.dictImgOCR[imgName] = imgOCRText
 
@@ -316,6 +315,31 @@ class MainWindow( wx.Frame ):
             return lstImages
         except :
             return lstImages
+
+    def OCRByOmniPageMethod(self,strInput):
+
+        strOutput = os.path.join(os.getcwd(),'output.txt')
+
+        Engine.Init('Nuance', 'Dragon OCR')        
+        settings = SettingCollection()
+
+        page = Page(strInput, RecAPIConstants.IMGF_FIRSTPAGE, settings)
+        page.Preprocess()
+        page.Recognize()
+        
+        settings.DTXTOutputformat = DTXTOUTPUTFORMATS.DTXT_TXTS
+        page.Convert2DTXT(strOutput)
+        
+        strText = ""
+        with open(strOutput,'r') as f:
+            strText = f.read()
+
+        os.remove(strOutput)
+
+        page.Dispose()
+        Engine.ForceQuit()  
+
+        return strText
 
 
 if __name__ == '__main__':
