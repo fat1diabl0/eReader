@@ -46,6 +46,7 @@ class ImportPanel( wx.Panel ):
         #wx.html widget
         self.html_widget = wx.html2.WebView.New( self.html_panel, style = wx.BORDER_NONE )
         self.html_widget.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
+        self.html_widget.SetEditable(True)
         html_panel_sizer.Add( self.html_widget, 1, wx.EXPAND )
         self.html_panel.SetSizer( html_panel_sizer )
 
@@ -119,6 +120,15 @@ class ImportPanel( wx.Panel ):
     def ChangeHtmlContent( self, evt ):
         btn = evt.GetEventObject( );
         btnName = btn.GetName( )
+
+        if btnName == self.activeButton:
+            pageText = self.html_widget.GetPageText()
+            self.parent_frame.dictImgOCR[btnName] = pageText
+        elif btnName != self.activeButton:
+            pageText = self.html_widget.GetPageText()
+            self.parent_frame.dictImgOCR[self.activeButton] = pageText
+
+
         self.UpdateHTMLPage(btnName)
         self.activeButton = btnName
 
@@ -263,6 +273,8 @@ class ImportPanel( wx.Panel ):
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
         if self.IsShown():
+            print(self.html_widget.IsContextMenuEnabled())
+            print(self.html_widget.IsEditable())
             dlg = NavigateDialog(self)
             dlg.Show()
 
@@ -284,3 +296,9 @@ class ImportPanel( wx.Panel ):
             self.parent_frame.cameraPanel.Hide()
         self.parent_frame.landingPanel.Show()
         self.parent_frame.Layout()
+
+    def DeleteText(self,evt):
+        self.html_widget.DeleteSelection()
+        self.parent_frame.dictImgOCR[self.activeButton] = self.html_widget.GetPageText( )
+        # print(self.html_widget.GetPageText( ))
+
