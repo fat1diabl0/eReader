@@ -156,18 +156,22 @@ class MainWindow( wx.Frame ):
 
         navigationID = wx.NewId()
         self.Bind(wx.EVT_MENU, self.importPanel.NavigateText, id=navigationID)                
-                        
-        entries = [wx.AcceleratorEntry() for i in range(9)]
 
-        entries[0].Set(SettingsData.Key, ord(SettingsData.Import), importID)
-        entries[1].Set(SettingsData.Key, ord(SettingsData.FindReplace), findID)
-        entries[2].Set(SettingsData.Key, ord(SettingsData.Bookmarks), bookmarkID)
-        entries[3].Set(SettingsData.Key, SettingsData.TakePhoto, takePhoteID)
-        entries[4].Set(SettingsData.Key, ord(SettingsData.Done), doneID)
-        entries[5].Set(SettingsData.Key, ord(SettingsData.Timer), timerID)
-        entries[6].Set(SettingsData.Key, ord(SettingsData.SettingsDialog), settingsID)
-        entries[7].Set(SettingsData.Key, ord(SettingsData.Export), exportID)
-        entries[8].Set(SettingsData.Key, ord(SettingsData.Navigation), navigationID)
+        deleteID = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.importPanel.DeleteText, id=deleteID)                
+                        
+        entries = [wx.AcceleratorEntry() for i in range(10)]
+
+        entries[0].Set(SettingsData.ctrlKey, ord(SettingsData.Import), importID)
+        entries[1].Set(SettingsData.ctrlKey, ord(SettingsData.FindReplace), findID)
+        entries[2].Set(SettingsData.ctrlKey, ord(SettingsData.Bookmarks), bookmarkID)
+        entries[3].Set(SettingsData.ctrlKey, SettingsData.TakePhoto, takePhoteID)
+        entries[4].Set(SettingsData.ctrlKey, ord(SettingsData.Done), doneID)
+        entries[5].Set(SettingsData.ctrlKey, ord(SettingsData.Timer), timerID)
+        entries[6].Set(SettingsData.ctrlKey, ord(SettingsData.SettingsDialog), settingsID)
+        entries[7].Set(SettingsData.ctrlKey, ord(SettingsData.Export), exportID)
+        entries[8].Set(SettingsData.ctrlKey, ord(SettingsData.Navigation), navigationID)
+        entries[9].Set(SettingsData.normalKey, SettingsData.Delete, deleteID)
 
         accel = wx.AcceleratorTable(entries)
         self.SetAcceleratorTable(accel)        
