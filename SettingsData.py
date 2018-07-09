@@ -17,7 +17,8 @@ OCRMethod = "Google"
 
 #HOT Key Settings
 
-Key = wx.ACCEL_CTRL
+ctrlKey = wx.ACCEL_CTRL
+normalKey = wx.ACCEL_NORMAL
 Import = 'I'
 TakePhoto = wx.WXK_SPACE
 ZoomInCamera = ""
@@ -29,3 +30,4 @@ FindReplace = 'F'
 Bookmarks = 'B'
 Navigation = 'H'
 SettingsDialog = 'X'
+Delete = wx.WXK_DELETE
