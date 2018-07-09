@@ -15,6 +15,7 @@ from collections import OrderedDict
 from backend import googleOCR
 import Settings
 import SettingsData
+from Shortcuts import clsShortCuts
 import PyPDF2
 
 class MainWindow( wx.Frame ):
@@ -82,7 +83,11 @@ class MainWindow( wx.Frame ):
         menu_bar.Append( navigation_menu, '&Navigation' )
 
         help_menu = wx.Menu( )
-        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Manual",kind = wx.ITEM_NORMAL )
+        self.settingsID = wx.NewId()
+        menu_item = wx.MenuItem( help_menu,self.settingsID, text = "&Settings",kind = wx.ITEM_NORMAL )
+        help_menu.Append( menu_item )
+        self.manualID = wx.NewId()
+        menu_item = wx.MenuItem( help_menu,self.manualID, text = "&Manual",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
         menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Report a Bug",kind = wx.ITEM_NORMAL )
         help_menu.Append( menu_item )
@@ -104,13 +109,18 @@ class MainWindow( wx.Frame ):
         elif menu_id == wx.ID_NEW:
             self.importPanel.NavigateText(evt)
         elif menu_id == wx.ID_FIND:
-            self.importPanel.onFindShortCut(evt)           
+            self.importPanel.onFindShortCut(evt)
+        elif menu_id == self.settingsID:
+            self.importPanel.Settings(evt)
+        elif menu_id == self.manualID:
+            dlg = clsShortCuts(self)
+            dlg.Show()           
         elif menu_id == wx.ID_HELP:
             wx.MessageBox( 'Help' )
         elif menu_id == self.bookmarkID:
             self.importPanel.onBookmarkShortCut(evt)
         elif menu_id == self.headingID:
-            wx.MessageBox( 'Headings' )            
+            wx.MessageBox( 'Headings' )             
 
     def onClose( self, evt ):
         if self.cameraPanel.IsShown():
