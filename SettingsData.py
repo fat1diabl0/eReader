@@ -12,7 +12,7 @@ Font = "Helvetica"
 FontSize = 24
 FontColor = wx.BLACK
 IsSaveImages = "No"
-OCRMethod = "Google"
+OCRMethod = "OmniPage"
 
 
 #HOT Key Settings
