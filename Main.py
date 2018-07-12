@@ -341,7 +341,7 @@ class MainWindow( wx.Frame ):
             strText = f.read()
             # print(strText.encode("utf-8"))
 
-        os.remove(strOutput)        
+        #os.remove(strOutput)        
 
         return strText
 

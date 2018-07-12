@@ -13,8 +13,8 @@ from System.Xml import XmlDocument
 strInput = sys.argv[1]
 strOutput = sys.argv[2]
 
-# print(strInput)
-# print(strOutput)
+print(strInput)
+print(strOutput)
 
 Engine.Init('Nuance', 'Dragon OCR')
 
