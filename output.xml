@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<!--XML document generated using OCR technology from Nuance Communications, Inc.-->
+<document xmlns="http://www.scansoft.com/omnipage/xml/ssdoc-schema3.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<summary>
+</summary>
+<page ocr-vers="OmniPageCSDK20" app-vers="Dragon OCR">
+<description backColor="ffffff">
+<source file="C:\Users\DEEP\Desktop\csdk.PNG" dpix="96" dpiy="96" sizex="681" sizey="259"/>
+<theoreticalPage size="Custom" marginLeft="0" marginTop="0" marginRight="0" marginBottom="0" width="681" height="259"/>
+<language>en</language>
+</description>
+<zones>
+<textZone l="0" t="90" r="1793" b="353" backColor="cfd9ef" fillingMethod="omnifont" recognitionModule="omnifontPlus2w" chrFilter="all">
+<ln l="0" t="90" r="1785" b="345" baseLine="285" bold="true" underlined="none" fontSize="1700" foreColor="000000">
+<wd l="0" t="98" r="300" b="345"><run fontSize="3400" backColor="cfd9ef">a</run>
+</wd>
+<space width="83"/>
+<wd l="383" t="143" r="938" b="330">Python</wd>
+<space width="53"/>
+<wd l="990" t="143" r="1358" b="285">3.52</wd>
+<space width="53"/>
+<wd l="1410" t="143" r="1785" b="285">Shell</wd>
+<space/>
+</ln>
+</textZone>
+<textZone l="173" t="518" r="4568" b="713" backColor="cfd9ef" fillingMethod="omnifont" recognitionModule="omnifontPlus2w" chrFilter="all">
+<ln l="173" t="518" r="4560" b="705" baseLine="660" bold="true" underlined="none" fontSize="1700" foreColor="000000">
+<wd l="173" t="518" r="435" b="660">File</wd>
+<space width="218"/>
+<wd l="653" t="518" r="945" b="660">Edit</wd>
+<space width="210"/>
+<wd l="1155" t="518" r="1523" b="660">Shell</wd>
+<space width="225"/>
+<wd l="1748" t="518" r="2258" b="705">Debug</wd>
+<space width="218"/>
+<wd l="2475" t="518" r="3105" b="705">Options</wd>
+<space width="203"/>
+<wd l="3308" t="518" r="3975" b="660">Window</wd>
+<space width="218"/>
+<wd l="4193" t="518" r="4560" b="705">Help</wd>
+<space/>
+</ln>
+</textZone>
+<textZone l="143" t="833" r="10095" b="1688" fillingMethod="omnifont" recognitionModule="omnifontPlus2w" chrFilter="all">
+<ln l="158" t="833" r="9255" b="990" baseLine="960" underlined="none" fontSize="1700">
+<wd l="158" t="833" r="863" b="990">Python</wd>
+<space width="135"/>
+<wd l="998" t="833" r="1568" b="960">3.5.2</wd>
+<space width="195"/>
+<wd l="1763" t="833" r="4185" b="990">(v3.5.2:4def2a2901a5,</wd>
+<space width="173"/>
+<wd l="4358" t="833" r="4703" b="960">Jun</wd>
+<space width="135"/>
+<wd l="4838" t="833" r="5055" b="960">25</wd>
+<space width="143"/>
+<wd l="5198" t="833" r="5745" b="990">2016,</wd>
+<space width="173"/>
+<wd l="5918" t="833" r="6938" b="990">22:18:55)</wd>
+<space width="210"/>
+<wd l="7148" t="833" r="7590" b="990">[MSC</wd>
+<space width="113"/>
+<wd l="7703" t="833" r="8415" b="960">v.1900</wd>
+<space width="150"/>
+<wd l="8565" t="833" r="8775" b="960">64</wd>
+<space width="128"/>
+<wd l="8903" t="833" r="9255" b="960">bit</wd>
+<space/>
+</ln>
+<ln l="158" t="1073" r="1808" b="1230" baseLine="1200" underlined="none" fontSize="1700">
+<wd l="158" t="1073" r="705" b="1230">D64)]</wd>
+<space width="165"/>
+<wd l="870" t="1103" r="1110" b="1200">on</wd>
+<space width="113"/>
+<wd l="1223" t="1073" r="1808" b="1200">win32</wd>
+<space/>
+</ln>
+<ln l="143" t="1313" r="7785" b="1470" baseLine="1440" underlined="none" fontSize="1700">
+<wd l="143" t="1313" r="615" b="1470">Type</wd>
+<space width="150"/>
+<wd l="765" t="1313" r="2138" b="1470">&quot;copyright&quot;,</wd>
+<space width="195"/>
+<wd l="2333" t="1313" r="3368" b="1440">&quot;credits&quot;</wd>
+<space width="150"/>
+<wd l="3518" t="1343" r="3743" b="1440">or</wd>
+<space width="143"/>
+<wd l="3885" t="1313" r="5168" b="1470">&quot;license()&quot;</wd>
+<space width="150"/>
+<wd l="5318" t="1313" r="5663" b="1440">for</wd>
+<space width="120"/>
+<wd l="5783" t="1343" r="6255" b="1440">more</wd>
+<space width="143"/>
+<wd l="6398" t="1313" r="7785" b="1440">information.</wd>
+<space/>
+</ln>
+<ln l="158" t="1568" r="503" b="1680" baseLine="1680" underlined="none" fontSize="1700" foreColor="12094c">
+<wd l="158" t="1568" r="503" b="1680">&gt;&gt;&gt;</wd>
+<space/>
+</ln>
+</textZone>
+<textZone l="143" t="1778" r="9750" b="3848" fillingMethod="omnifont" recognitionModule="omnifontPlus2w" chrFilter="all">
+<ln l="150" t="1778" r="9503" b="1950" baseLine="1920" underlined="none" fontSize="1700">
+<tab position="150" leader="45"/>
+<tab position="2423" leader="45"/>
+<space width="128"/>
+<wd l="2550" t="1793" r="3465" b="1920">RESTART:</wd>
+<space width="165"/>
+<wd l="3630" t="1778" r="7110" b="1950">C:\Users\DEEP\Desktop\csdk.py</wd>
+<space width="120"/>
+<tab position="7230" leader="95"/>
+<tab position="9503" leader="95"/>
+</ln>
+<ln l="150" t="2033" r="4185" b="2190" baseLine="2160" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="150" t="2033" r="1230" b="2160">Traceback</wd>
+<space width="165"/>
+<wd l="1395" t="2033" r="1935" b="2190">(most</wd>
+<space width="143"/>
+<wd l="2078" t="2048" r="2775" b="2160">recent</wd>
+<space width="143"/>
+<wd l="2918" t="2033" r="3375" b="2160">call</wd>
+<space width="143"/>
+<wd l="3518" t="2033" r="4185" b="2190">last):</wd>
+<space/>
+</ln>
+<ln l="405" t="2258" r="7223" b="2430" baseLine="2400" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="405" t="2273" r="855" b="2400">File</wd>
+<space width="150"/>
+<wd l="1005" t="2258" r="4778" b="2430">&quot;C:\Users\DEEP\Desktop\csdk.py&quot;,</wd>
+<space width="180"/>
+<wd l="4958" t="2273" r="5415" b="2400">line</wd>
+<space width="143"/>
+<wd l="5558" t="2273" r="5738" b="2430">7,</wd>
+<space width="180"/>
+<wd l="5918" t="2273" r="6143" b="2400">in</wd>
+<space width="128"/>
+<wd l="6270" t="2273" r="7223" b="2400">&lt;module&gt;</wd>
+<space/>
+</ln>
+<ln l="638" t="2513" r="6458" b="2700" baseLine="2640" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="638" t="2513" r="1110" b="2640">csdk</wd>
+<space width="120"/>
+<wd l="1230" t="2543" r="1343" b="2595"><run foreColor="6373c8" backColor="ffffff">=</run>
+</wd>
+<space width="120"/>
+<wd l="1463" t="2513" r="2040" b="2670">CSDK(</wd>
+<space width="68"/>
+<wd l="2108" t="2513" r="3578" b="2700">&apos;my_company&apos;,</wd>
+<space width="210"/>
+<wd l="3788" t="2513" r="6458" b="2700">imy_producti,None,None)</wd>
+<space/>
+</ln>
+<ln l="405" t="2753" r="6495" b="2910" baseLine="2880" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="405" t="2753" r="855" b="2880">File</wd>
+<space width="150"/>
+<wd l="1005" t="2753" r="2498" b="2910">&quot;pycsdk.pyx&quot;,</wd>
+<space width="180"/>
+<wd l="2678" t="2753" r="3135" b="2880">line</wd>
+<space width="135"/>
+<wd l="3270" t="2753" r="3698" b="2910">239,</wd>
+<space width="180"/>
+<wd l="3878" t="2753" r="4103" b="2880">in</wd>
+<space width="120"/>
+<wd l="4223" t="2753" r="5625" b="2910">pycsdk.CSDK.</wd>
+<space width="293"/>
+<wd l="5918" t="2753" r="6495" b="2880">cinit</wd>
+<space/>
+</ln>
+<ln l="405" t="2993" r="6735" b="3180" baseLine="3120" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="405" t="2993" r="855" b="3120">File</wd>
+<space width="150"/>
+<wd l="1005" t="2993" r="2498" b="3150">&quot;pycsdk.pyx&quot;,</wd>
+<space width="180"/>
+<wd l="2678" t="2993" r="3135" b="3120">line</wd>
+<space width="143"/>
+<wd l="3278" t="2993" r="3698" b="3150">213,</wd>
+<space width="180"/>
+<wd l="3878" t="2993" r="4103" b="3120">in</wd>
+<space width="120"/>
+<wd l="4223" t="2993" r="6735" b="3180">pycsdk.CSDK.check_err</wd>
+<space/>
+</ln>
+<ln l="143" t="3233" r="9743" b="3390" baseLine="3360" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="143" t="3233" r="2625" b="3390">pycsdk.CSDKException:</wd>
+<space width="158"/>
+<wd l="2783" t="3233" r="3825" b="3390">OmniPage:</wd>
+<space width="173"/>
+<wd l="3998" t="3233" r="5775" b="3390">kRecSetCodePage</wd>
+<space width="143"/>
+<wd l="5918" t="3233" r="6870" b="3360">returned</wd>
+<space width="120"/>
+<wd l="6990" t="3263" r="7583" b="3360">error</wd>
+<space width="135"/>
+<wd l="7718" t="3233" r="8745" b="3360">8004c302:</wd>
+<space width="158"/>
+<wd l="8903" t="3233" r="9270" b="3360">CHR</wd>
+<space width="128"/>
+<wd l="9398" t="3233" r="9743" b="3360">ILL</wd>
+<space/>
+</ln>
+<ln l="150" t="3473" r="4058" b="3630" baseLine="3600" underlined="none" fontSize="1700" foreColor="0f18ca">
+<wd l="150" t="3473" r="1463" b="3600">EGALSETTING</wd>
+<space width="128"/>
+<wd l="1590" t="3473" r="1950" b="3600">ERR</wd>
+<space width="165"/>
+<wd l="2115" t="3473" r="2535" b="3630">(RET</wd>
+<space width="128"/>
+<wd l="2663" t="3473" r="3270" b="3600">OTHER</wd>
+<space width="120"/>
+<wd l="3390" t="3473" r="4058" b="3630">ERROR)</wd>
+<space/>
+</ln>
+<ln l="158" t="3728" r="503" b="3840" baseLine="3840" underlined="none" fontSize="1700" foreColor="12094c">
+<wd l="158" t="3728" r="503" b="3840">&gt;&gt;&gt;</wd>
+<space/>
+</ln>
+</textZone>
+<zone l="45" t="428" r="10095" b="735" backColor="cfd9ef">
+<leftBorder type="single" width="23" color="000000"/>
+<topBorder type="single" width="23" color="6c7076"/>
+<rightBorder type="single" width="23" color="000000"/>
+<bottomBorder type="double" width="23" color="c8bcb7"/>
+</zone>
+<rulerline l="7845" t="285" r="10095" b="285" type="single" width="23" color="949dac"/>
+</zones>
+</page>
+</document>

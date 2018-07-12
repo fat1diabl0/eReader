@@ -1,11 +1,3 @@
-try:
-    import clr
-    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.ArgTypes.dll")
-    clr.AddReference("C:\\Program Files\\Nuance\\OPCaptureSDK20\\Bin64\\Nuance.OmniPage.CSDK.Objects.dll")
-    from Nuance.OmniPage.CSDK.Objects import SettingCollection, Page, Image, Engine, ImageFile
-    from Nuance.OmniPage.CSDK.ArgTypes import RecAPIConstants, IMG_CONVERSION, DTXTOUTPUTFORMATS, IMAGEINDEX
-except ImportError:
-    print("CLR Failed")
 import wx, os, random
 import cv2
 import CameraScreen
@@ -15,8 +7,8 @@ from collections import OrderedDict
 from backend import googleOCR
 import Settings
 import SettingsData
-from Shortcuts import clsShortCuts
 import PyPDF2
+from Shortcuts import clsShortCuts
 
 class MainWindow( wx.Frame ):
     def __init__( self ):
@@ -53,7 +45,16 @@ class MainWindow( wx.Frame ):
         self.Layout()
         self.Centre( wx.BOTH )   
 
-        self.Bind(wx.EVT_CLOSE, self.onClose)        
+        self.Bind(wx.EVT_CLOSE, self.onClose)    
+
+        settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
+        if os.path.exists(settingsFilePath):
+            with open(settingsFilePath,'r') as f:
+                lines = f.readlines()
+                for l in lines:
+                    fields = l.split(':')
+                    if fields[0] == "OCRMethod":
+                        SettingsData.OCRMethod = fields[1].strip()              
 
         self.SetShortCut() 
 
@@ -120,7 +121,7 @@ class MainWindow( wx.Frame ):
         elif menu_id == self.bookmarkID:
             self.importPanel.onBookmarkShortCut(evt)
         elif menu_id == self.headingID:
-            wx.MessageBox( 'Headings' )             
+            wx.MessageBox( 'Headings' )         
 
     def onClose( self, evt ):
         if self.cameraPanel.IsShown():
@@ -331,27 +332,16 @@ class MainWindow( wx.Frame ):
             return lstImages
 
     def OCRByOmniPageMethod(self,strInput):
-
         strOutput = os.path.join(os.getcwd(),'output.txt')
+        # strOutput = os.path.join(os.getcwd(),'output.xml')
 
-        Engine.Init('Nuance', 'Dragon OCR')        
-        settings = SettingCollection()
+        os.system('python OCR-mod-Command.py ' + "\"" + strInput + "\"" + ' ' + "\"" + strOutput +"\"")
 
-        page = Page(strInput, RecAPIConstants.IMGF_FIRSTPAGE, settings)
-        page.Preprocess()
-        page.Recognize()
-        
-        settings.DTXTOutputformat = DTXTOUTPUTFORMATS.DTXT_TXTS
-        page.Convert2DTXT(strOutput)
-        
-        strText = ""
         with open(strOutput,'r') as f:
             strText = f.read()
+            # print(strText.encode("utf-8"))
 
-        os.remove(strOutput)
-
-        page.Dispose()
-        Engine.ForceQuit()  
+        os.remove(strOutput)        
 
         return strText
 
