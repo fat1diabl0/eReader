@@ -9,7 +9,7 @@ from models import WebcamFeed
 from ImportScreen import *
 from collections import OrderedDict
 import SettingsData
-from backend import googleOCR
+from backend import googleOCR, OmniPageOCR
 import shutil
 import SettingsData
 import PyPDF2
@@ -226,12 +226,12 @@ class CameraPanel( wx.Panel ):
                     imgName = p.split('.')[0]
                     imgFullPath = os.path.join(workDir,p)
                     if imgName not in d.keys():
-                        # imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+
                         if SettingsData.OCRMethod == "Google":
                             imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
                         else:
-                            imgOCRText = self.parent_frame.OCRByOmniPageMethod(imgFullPath)                        
-                            print(imgOCRText)
+                            imgOCRText = OmniPageOCR.GetOCRByOmniPage(imgFullPath)                        
+                        
                         d[imgName] = imgOCRText
 
 
