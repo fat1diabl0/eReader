@@ -42,6 +42,7 @@ class BookmarkDialog ( wx.Dialog ):
 		self.btnBMNameOk = wx.Button( self, wx.ID_ANY, u"Ok", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer3.Add( self.btnBMNameOk, 0, wx.ALL, 5 )
 		
+		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
 		
 		bSizer1.Add( bSizer3, 0, wx.ALIGN_RIGHT, 5 )
 		
@@ -59,7 +60,13 @@ class BookmarkDialog ( wx.Dialog ):
 	def __del__( self ):
 		pass
 	
-	
+	def OnKeyUP(self, event):
+		keyCode = event.GetKeyCode()
+		if keyCode == wx.WXK_ESCAPE:
+			self.Close()
+		else:
+			event.Skip() 
+
 	# Virtual event handlers, overide them in your derived class
 	def OnBMNameCancel( self, event ):
 		self.Destroy()
@@ -91,9 +98,7 @@ class BookmarkDialog ( wx.Dialog ):
 					# print(charAfter)
 
 					if charBefore != '>' and charAfter != '<':
-						#strReplace = r"</p> <p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p><p>"
-						#strReplace = r"</p> <div aria-label="+strBMName+" role=navigation> "+strSelectedText+" </div><p>"
-						strReplace = r"</p> <span aria-label="+strBMName+" role=navigation> "+strSelectedText+" </span><p>"
+						strReplace = r"</p> <p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p><p>"
 
 					# strReplace = r"<p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p>"
 					result = str.replace(strPageSource,strSelectedText,strReplace,1)

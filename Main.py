@@ -4,11 +4,12 @@ import CameraScreen
 import LandingScreen
 import ImportScreen
 from collections import OrderedDict
-from backend import googleOCR
+from backend import googleOCR,OmniPageOCR
 import Settings
 import SettingsData
 import PyPDF2
 from Shortcuts import clsShortCuts
+
 
 class MainWindow( wx.Frame ):
     def __init__( self ):
@@ -198,48 +199,45 @@ class MainWindow( wx.Frame ):
                 
                 lstSelectedFiles = image_dlg.GetPaths( )
 
-                lstImages = []
-                fname,fext = os.path.splitext(lstSelectedFiles[0])
-                if fext == '.pdf':
-                    fPath = os.path.dirname(fname)
-                    lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
-                    #print(lstImages)
-                    if lstImages is None:
-                        return
-                else:
-                    lstImages = lstSelectedFiles
-
-                if len(lstImages) > 0:
-                    #perform Google OCR
-                    
-                    for img in lstImages:
-                        # imgOCRText = googleOCR.performGoogleOCR(img)
-                        # print(img)
-                        # print(SettingsData.OCRMethod)
-                        if SettingsData.OCRMethod == "Google":
-                            imgOCRText = googleOCR.performGoogleOCR(img)
-                            # print(imgOCRText)    
-                        else:
-                            imgOCRText = self.OCRByOmniPageMethod(img)
-                            # print(imgOCRText)
-
-                        imgName = os.path.splitext(os.path.basename(img))[0]
+                if SettingsData.OCRMethod == "OmniPage":
+                    for f in lstSelectedFiles:
+                        imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
+                        imgName = os.path.splitext(os.path.basename(f))[0]
                         self.dictImgOCR[imgName] = imgOCRText
-
                 else:
-                    for pdf in lstSelectedFiles:
-                        objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
-                        noOfPages = objPdf.numPages
-                        for page in objPdf.pages: 
-                            pageText = page.extractText()
-                            
-                            while True:
-                                no = random.randint(1,200)
-                                if no not in self.dictImgOCR.keys():
-                                    self.dictImgOCR[str(no)] = pageText
-                                    break
-                                else:
-                                    continue
+                    lstImages = []
+                    fname,fext = os.path.splitext(lstSelectedFiles[0])
+                    if fext == '.pdf':
+                        fPath = os.path.dirname(fname)
+                        lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
+                        #print(lstImages)
+                        if lstImages is None:
+                            return
+                    else:
+                        lstImages = lstSelectedFiles
+
+                    if len(lstImages) > 0:
+                        #perform Google OCR
+                        
+                        for img in lstImages:
+                            imgOCRText = googleOCR.performGoogleOCR(img)
+                            imgName = os.path.splitext(os.path.basename(img))[0]
+                            self.dictImgOCR[imgName] = imgOCRText
+
+                    else:
+                        for pdf in lstSelectedFiles:
+                            objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                            noOfPages = objPdf.numPages
+                            for page in objPdf.pages: 
+                                pageText = page.extractText()
+                                
+                                while True:
+                                    no = random.randint(1,200)
+                                    if no not in self.dictImgOCR.keys():
+                                        self.dictImgOCR[str(no)] = pageText
+                                        break
+                                    else:
+                                        continue
 
                     
                 if self.cameraPanel.IsShown():
@@ -341,7 +339,7 @@ class MainWindow( wx.Frame ):
             strText = f.read()
             # print(strText.encode("utf-8"))
 
-        #os.remove(strOutput)        
+        os.remove(strOutput)        
 
         return strText
 

@@ -122,8 +122,9 @@ class clsShortCuts ( wx.Dialog ):
 		
 		
 		bSizer2.Add( bSizer6, 1, wx.EXPAND, 5 )
-		
-		
+
+		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
+
 		self.SetSizer( bSizer2 )
 		self.Layout()
 		
@@ -131,6 +132,13 @@ class clsShortCuts ( wx.Dialog ):
 	
 	def __del__( self ):
 		pass
+
+	def OnKeyUP(self, event):
+		keyCode = event.GetKeyCode()
+		if keyCode == wx.WXK_ESCAPE:
+			self.Close()
+		else:
+			event.Skip() 		
 	
 
 if __name__ == '__main__':

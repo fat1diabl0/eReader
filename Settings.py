@@ -158,7 +158,8 @@ class SettingsDialog ( wx.Dialog ):
 		
 		bSizer1.Add( bSizer9, 0, wx.EXPAND, 5 )
 		
-		
+		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
+
 		self.SetSizer( bSizer1 )
 		self.Layout()
 		
@@ -190,9 +191,18 @@ class SettingsDialog ( wx.Dialog ):
 		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
 		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
 
+		
+
 	
 	def __del__( self ):
 		pass
+
+	def OnKeyUP(self, event):
+		keyCode = event.GetKeyCode()
+		if keyCode == wx.WXK_ESCAPE:
+			self.Close()
+		else:
+			event.Skip() 		
 
 	def getConnectedCams(self):
 		max_tested = 10
