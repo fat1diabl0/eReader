@@ -28,4 +28,4 @@ def GetOCRByOmniPage(strInput):
 
 	
 # if __name__ == "__main__":
-# 	print(GetOCRByOmniPage(r"F:\manoj_resume.pdf").encode('utf-8'))
+# 	print(GetOCRByOmniPage(r"F:\c210k_pdf.pdf").encode('utf-8'))
