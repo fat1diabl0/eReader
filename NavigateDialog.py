@@ -126,12 +126,14 @@ class NavigateDialog ( wx.Dialog ):
 		
 		bSizer4 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		self.btnCancel = wx.Button( self, wx.ID_CANCEL, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
 		bSizer4.Add( self.btnCancel, 0, wx.ALL, 5 )
 		self.btnCancel.Bind( wx.EVT_BUTTON, self.OnClose )
 		
 		bSizer1.Add( bSizer4, 0, wx.ALIGN_RIGHT, 5 )
 		
+		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
+
 		
 		self.SetSizer( bSizer1 )
 		self.Layout()
@@ -156,6 +158,13 @@ class NavigateDialog ( wx.Dialog ):
 	def __del__( self ):
 		pass
 
+	def OnKeyUP(self, event):
+		keyCode = event.GetKeyCode()
+		if keyCode == wx.WXK_ESCAPE:
+			self.Close()
+		else:
+			event.Skip() 
+			
 	def OnTabChanged( self, event ):
 		page = self.m_notebook1.GetPageText(event.GetSelection())
 		#print(page)
