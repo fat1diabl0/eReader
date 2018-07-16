@@ -93,10 +93,6 @@ class CameraPanel( wx.Panel ):
             camId = 0
 
         
-        # if(self.noOfCam > 1):
-        #     print(self.noOfCam)
-        #     camId = 1
-
         self.objWebCamFeed = WebcamFeed(camId)
         if not self.objWebCamFeed.has_webcam():
             print ('Webcam has not been detected.')
@@ -120,14 +116,7 @@ class CameraPanel( wx.Panel ):
     """ Main Update loop that calls the Paint function """
     def onUpdate(self, event):
         if self.state == self.STATE_RUNNING:
-            # fw, fh = self.m_panelVideo.GetSize()
-            # x, y = self.m_panelVideo.GetPosition()
-            # print(str(fw) + "---" + str(fh))
-            # print(str(x) + "---" + str(y))
-            # r = wx.Rect(x,y,fw,fh)
-            # self.Refresh(rect = r)           
             self.m_panelVideo.Refresh()
-            # self.Refresh()
     
     """ Retrieves a new webcam image and paints it onto the frame """
     def onPaint(self, event):
@@ -227,10 +216,10 @@ class CameraPanel( wx.Panel ):
                     imgFullPath = os.path.join(workDir,p)
                     if imgName not in d.keys():
 
-                        if SettingsData.OCRMethod == "Google":
-                            imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
+                        if SettingsData.OCRMethod == "OmniPage":
+                            imgOCRText = OmniPageOCR.GetOCRByOmniPage(imgFullPath) 
                         else:
-                            imgOCRText = OmniPageOCR.GetOCRByOmniPage(imgFullPath)                        
+                            imgOCRText = googleOCR.performGoogleOCR(imgFullPath)
                         
                         d[imgName] = imgOCRText
 
