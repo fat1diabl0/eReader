@@ -1,4 +1,6 @@
-import wx, os, random
+import wx
+import os
+import random
 import cv2
 import CameraScreen
 import LandingScreen
@@ -8,33 +10,34 @@ from backend import googleOCR,OmniPageOCR
 import Settings
 import SettingsData
 import PyPDF2
+import threading
 from Shortcuts import clsShortCuts
 
 
-class MainWindow( wx.Frame ):
-    def __init__( self ):
+class MainWindow(wx.Frame):
+    def __init__(self):
         wx.Frame.__init__(self, None, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX)
-        self.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
-        size = wx.Display( ).GetClientArea( )
-        width_window = size.GetWidth( )
-        height_window = size.GetHeight( )
-        self.SetMinSize( wx.Size( 0.75 * width_window, 0.75 * height_window ) )
-        self.SetPosition( wx.Point( 0.125 *width_window, 0.125 * height_window ) )
-        self.icons_folder = os.path.join( os.getcwd( ), 'Assets' )
+        self.SetBackgroundColour(wx.Colour(79, 79, 79))
+        size = wx.Display().GetClientArea()
+        width_window = size.GetWidth()
+        height_window = size.GetHeight()
+        self.SetMinSize(wx.Size(0.75 * width_window, 0.75 * height_window))
+        self.SetPosition(wx.Point(0.125 * width_window, 0.125 * height_window))
+        self.icons_folder = os.path.join(os.getcwd(), 'Assets')
         self.min_width_menu = 250
         self.locale = wx.Locale(wx.LANGUAGE_ENGLISH)
-        self.CreateMenu( )
+        self.CreateMenu()
         
-        bSizer3 = wx.BoxSizer( wx.VERTICAL )
+        bSizer3 = wx.BoxSizer(wx.VERTICAL)
 
         self.landingPanel = LandingScreen.LandingPanel(self)   
-        bSizer3.Add( self.landingPanel, 0, wx.ALL | wx.EXPAND, 5 )         
+        bSizer3.Add(self.landingPanel, 0, wx.ALL | wx.EXPAND, 5)         
 
         self.cameraPanel = CameraScreen.CameraPanel(self)   
-        bSizer3.Add( self.cameraPanel, 0, wx.ALL | wx.EXPAND, 5 )
+        bSizer3.Add(self.cameraPanel, 0, wx.ALL | wx.EXPAND, 5)
 
         self.importPanel = ImportScreen.ImportPanel(self)   
-        bSizer3.Add( self.importPanel, 0, wx.ALL | wx.EXPAND, 5 )
+        bSizer3.Add(self.importPanel, 0, wx.ALL | wx.EXPAND, 5)
 
         self.landingPanel.Hide()           
         self.importPanel.Hide()        
@@ -42,9 +45,9 @@ class MainWindow( wx.Frame ):
 
         self.cameraPanel.StartLiveWebcamFeed()
 
-        self.SetSizer( bSizer3 )
+        self.SetSizer(bSizer3)
         self.Layout()
-        self.Centre( wx.BOTH )   
+        self.Centre(wx.BOTH)   
 
         self.Bind(wx.EVT_CLOSE, self.onClose)    
 
@@ -59,49 +62,49 @@ class MainWindow( wx.Frame ):
 
         self.SetShortCut() 
 
-    def CreateMenu( self ):
-        menu_bar = wx.MenuBar( )
+    def CreateMenu(self):
+        menu_bar = wx.MenuBar()
 
-        file_menu = wx.Menu( )
-        menu_item = wx.MenuItem( file_menu,wx.ID_OPEN, text = "&Import",kind = wx.ITEM_NORMAL )
+        file_menu = wx.Menu()
+        menu_item = wx.MenuItem(file_menu,wx.ID_OPEN, text = "&Import",kind = wx.ITEM_NORMAL)
 
-        file_menu.Append( menu_item )
-        menu_item = wx.MenuItem( file_menu,wx.ID_SAVEAS, text = "&Export",kind = wx.ITEM_NORMAL )
-        file_menu.Append( menu_item )
-        menu_item = wx.MenuItem( file_menu,wx.ID_EXIT, text = "&Quit",kind = wx.ITEM_NORMAL )
-        file_menu.Append( menu_item )
-        menu_bar.Append( file_menu, '&File' )
+        file_menu.Append(menu_item)
+        menu_item = wx.MenuItem(file_menu,wx.ID_SAVEAS, text = "&Export",kind = wx.ITEM_NORMAL)
+        file_menu.Append(menu_item)
+        menu_item = wx.MenuItem(file_menu,wx.ID_EXIT, text = "&Quit",kind = wx.ITEM_NORMAL)
+        file_menu.Append(menu_item)
+        menu_bar.Append(file_menu, '&File')
 
-        navigation_menu = wx.Menu( )
+        navigation_menu = wx.Menu()
         self.bookmarkID = wx.NewId()
-        menu_item = wx.MenuItem( navigation_menu,self.bookmarkID, text = "&Bookmark",kind = wx.ITEM_NORMAL )
-        navigation_menu.Append( menu_item )
+        menu_item = wx.MenuItem(navigation_menu,self.bookmarkID, text = "&Bookmark",kind = wx.ITEM_NORMAL)
+        navigation_menu.Append(menu_item)
 
         self.headingID = wx.NewId()
-        menu_item = wx.MenuItem( navigation_menu,self.headingID, text = "H&eadings",kind = wx.ITEM_NORMAL )
-        navigation_menu.Append( menu_item )
-        menu_item = wx.MenuItem( navigation_menu,wx.ID_FIND, text = "&Find",kind = wx.ITEM_NORMAL )
-        navigation_menu.Append( menu_item )
-        menu_bar.Append( navigation_menu, '&Navigation' )
+        menu_item = wx.MenuItem(navigation_menu,self.headingID, text = "H&eadings",kind = wx.ITEM_NORMAL)
+        navigation_menu.Append(menu_item)
+        menu_item = wx.MenuItem(navigation_menu,wx.ID_FIND, text = "&Find",kind = wx.ITEM_NORMAL)
+        navigation_menu.Append(menu_item)
+        menu_bar.Append(navigation_menu, '&Navigation')
 
-        help_menu = wx.Menu( )
+        help_menu = wx.Menu()
         self.settingsID = wx.NewId()
-        menu_item = wx.MenuItem( help_menu,self.settingsID, text = "&Settings",kind = wx.ITEM_NORMAL )
-        help_menu.Append( menu_item )
+        menu_item = wx.MenuItem(help_menu,self.settingsID, text = "&Settings",kind = wx.ITEM_NORMAL)
+        help_menu.Append(menu_item)
         self.manualID = wx.NewId()
-        menu_item = wx.MenuItem( help_menu,self.manualID, text = "&Manual",kind = wx.ITEM_NORMAL )
-        help_menu.Append( menu_item )
-        menu_item = wx.MenuItem( help_menu,wx.ID_HELP, text = "&Report a Bug",kind = wx.ITEM_NORMAL )
-        help_menu.Append( menu_item )
+        menu_item = wx.MenuItem(help_menu,self.manualID, text = "&Manual",kind = wx.ITEM_NORMAL)
+        help_menu.Append(menu_item)
+        menu_item = wx.MenuItem(help_menu,wx.ID_HELP, text = "&Report a Bug",kind = wx.ITEM_NORMAL)
+        help_menu.Append(menu_item)
 
-        menu_bar.Append( help_menu, '&Help' )
+        menu_bar.Append(help_menu, '&Help')
 
-        self.SetMenuBar( menu_bar )
+        self.SetMenuBar(menu_bar)
         
-        self.Bind( wx.EVT_MENU, self.HandleMenuItem )
+        self.Bind(wx.EVT_MENU, self.HandleMenuItem)
 
-    def HandleMenuItem( self, evt ):
-        menu_id = evt.GetId( )
+    def HandleMenuItem(self, evt):
+        menu_id = evt.GetId()
         if menu_id == wx.ID_OPEN:
             self.onImport(evt)
         elif menu_id == wx.ID_SAVEAS:
@@ -118,13 +121,13 @@ class MainWindow( wx.Frame ):
             dlg = clsShortCuts(self)
             dlg.Show()           
         elif menu_id == wx.ID_HELP:
-            wx.MessageBox( 'Help' )
+            wx.MessageBox('Help')
         elif menu_id == self.bookmarkID:
             self.importPanel.onBookmarkShortCut(evt)
         elif menu_id == self.headingID:
-            wx.MessageBox( 'Headings' )         
+            wx.MessageBox('Headings')         
 
-    def onClose( self, evt ):
+    def onClose(self, evt):
         if self.cameraPanel.IsShown():
             self.cameraPanel.objWebCamFeed.release()
 
@@ -188,68 +191,70 @@ class MainWindow( wx.Frame ):
         accel = wx.AcceleratorTable(entries)
         self.SetAcceleratorTable(accel)        
 
-    def onImport( self, evt ):
-        if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
-            self.dictImgOCR = OrderedDict()
+    def onImport(self, evt):
+        # if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
+        self.dictImgOCR = OrderedDict()
 
-            img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
-            image_dlg = wx.FileDialog( self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+        img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
+        image_dlg = wx.FileDialog(self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+        
+        if image_dlg.ShowModal() == wx.ID_OK:
             
-            if image_dlg.ShowModal() == wx.ID_OK:
-                
-                lstSelectedFiles = image_dlg.GetPaths( )
+            lstSelectedFiles = image_dlg.GetPaths()
 
-                if SettingsData.OCRMethod == "OmniPage":
-                    for f in lstSelectedFiles:
-                        imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
-                        imgName = os.path.splitext(os.path.basename(f))[0]
-                        self.dictImgOCR[imgName] = imgOCRText
+            if SettingsData.OCRMethod == "OmniPage":
+                for f in lstSelectedFiles:
+                    imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
+                    # print(imgOCRText)
+                    imgName = os.path.splitext(os.path.basename(f))[0]
+                    self.dictImgOCR[imgName] = imgOCRText
+                    # print(self.dictImgOCR[imgName])
+            else:
+                lstImages = []
+                fname,fext = os.path.splitext(lstSelectedFiles[0])
+                if fext == '.pdf':
+                    fPath = os.path.dirname(fname)
+                    lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
+                    #print(lstImages)
+                    if lstImages is None:
+                        return
                 else:
-                    lstImages = []
-                    fname,fext = os.path.splitext(lstSelectedFiles[0])
-                    if fext == '.pdf':
-                        fPath = os.path.dirname(fname)
-                        lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
-                        #print(lstImages)
-                        if lstImages is None:
-                            return
-                    else:
-                        lstImages = lstSelectedFiles
+                    lstImages = lstSelectedFiles
 
-                    if len(lstImages) > 0:
-                        #perform Google OCR
-                        
-                        for img in lstImages:
-                            imgOCRText = googleOCR.performGoogleOCR(img)
-                            imgName = os.path.splitext(os.path.basename(img))[0]
-                            self.dictImgOCR[imgName] = imgOCRText
-
-                    else:
-                        for pdf in lstSelectedFiles:
-                            objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
-                            noOfPages = objPdf.numPages
-                            for page in objPdf.pages: 
-                                pageText = page.extractText()
-                                
-                                while True:
-                                    no = random.randint(1,200)
-                                    if no not in self.dictImgOCR.keys():
-                                        self.dictImgOCR[str(no)] = pageText
-                                        break
-                                    else:
-                                        continue
-
+                if len(lstImages) > 0:
+                    #perform Google OCR
                     
-                if self.cameraPanel.IsShown():
-                    self.cameraPanel.Hide()
-                if self.landingPanel.IsShown():
-                    self.landingPanel.Hide()
+                    for img in lstImages:
+                        imgOCRText = googleOCR.performGoogleOCR(img)
+                        imgName = os.path.splitext(os.path.basename(img))[0]
+                        self.dictImgOCR[imgName] = imgOCRText
 
-                self.importPanel.Show()
-                self.importPanel.LoadHTMLPage()
-                self.Layout()
-            
-            image_dlg.Destroy( )            
+                else:
+                    for pdf in lstSelectedFiles:
+                        objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                        noOfPages = objPdf.numPages
+                        for page in objPdf.pages: 
+                            pageText = page.extractText()
+                            
+                            while True:
+                                no = random.randint(1,200)
+                                if no not in self.dictImgOCR.keys():
+                                    self.dictImgOCR[str(no)] = pageText
+                                    break
+                                else:
+                                    continue
+
+                
+            if self.cameraPanel.IsShown():
+                self.cameraPanel.Hide()
+            if self.landingPanel.IsShown():
+                self.landingPanel.Hide()
+
+            self.importPanel.Show()
+            self.importPanel.LoadHTMLPage()
+            self.Layout()
+        
+        image_dlg.Destroy()            
 
     def GetAllImageFiles(self):
 
@@ -329,24 +334,10 @@ class MainWindow( wx.Frame ):
         except :
             return lstImages
 
-    def OCRByOmniPageMethod(self,strInput):
-        strOutput = os.path.join(os.getcwd(),'output.txt')
-        # strOutput = os.path.join(os.getcwd(),'output.xml')
-
-        os.system('python OCR-mod-Command.py ' + "\"" + strInput + "\"" + ' ' + "\"" + strOutput +"\"")
-
-        with open(strOutput,'r') as f:
-            strText = f.read()
-            # print(strText.encode("utf-8"))
-
-        os.remove(strOutput)        
-
-        return strText
-
 
 if __name__ == '__main__':
     app = wx.App(False)
     frame = MainWindow()
-    frame.Maximize( )
+    frame.Maximize()
     frame.Show()
     app.MainLoop()
