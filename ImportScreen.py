@@ -102,6 +102,7 @@ class ImportPanel( wx.Panel ):
         self.Layout( )
 
     def LoadHTMLPage(self):
+        self.html_widget.SetPage( '', '' )        
         self.html_pager_sizer.Clear(True)
         self.Layout()
 
@@ -133,10 +134,13 @@ class ImportPanel( wx.Panel ):
         self.activeButton = btnName
 
     def UpdateHTMLPage(self,btnName):
-        # print(self.parent_frame.dictImgOCR[btnName].encode("utf-8"))
+        # print(self.parent_frame.dictImgOCR[btnName])
+        strData = "<br />".join(self.parent_frame.dictImgOCR[btnName].split("\n"))
+        # print(strData)
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + self.parent_frame.dictImgOCR[btnName] +' </p></body></html>'
+        # html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + self.parent_frame.dictImgOCR[btnName] +' </p></body></html>'
+        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + strData +' </p></body></html>'
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
@@ -273,8 +277,6 @@ class ImportPanel( wx.Panel ):
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
         if self.IsShown():
-            print(self.html_widget.IsContextMenuEnabled())
-            print(self.html_widget.IsEditable())
             dlg = NavigateDialog(self)
             dlg.Show()
 
@@ -282,6 +284,7 @@ class ImportPanel( wx.Panel ):
     def Settings( self, evt ):
         dlg = SettingsDialog(self)
         dlg.ShowModal()
+
 
     def onBookmarkShortCut(self,evt):
         if self.IsShown():
