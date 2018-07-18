@@ -82,6 +82,7 @@ class CameraPanel( wx.Panel ):
 
     def StartLiveWebcamFeed( self ):
         self.noOfCam = self.getConnectedCams()
+        print("From StartLiveWebcamFeed " + str(self.noOfCam))
         if self.noOfCam == 1:
             camId = 0
         elif self.noOfCam > 1:
