@@ -43,8 +43,6 @@ class MainWindow(wx.Frame):
         self.importPanel.Hide()        
         self.cameraPanel.Show()
 
-        self.cameraPanel.StartLiveWebcamFeed()
-
         self.SetSizer(bSizer3)
         self.Layout()
         self.Centre(wx.BOTH)   
@@ -59,6 +57,11 @@ class MainWindow(wx.Frame):
                     fields = l.split(':')
                     if fields[0] == "OCRMethod":
                         SettingsData.OCRMethod = fields[1].strip()              
+                    elif fields[0] == "PreferredScanner":
+                        SettingsData.PreferredScanner = fields[1].strip()                        
+
+        SettingsData.noOfCam = self.getConnectedCams()
+        self.cameraPanel.StartLiveWebcamFeed()
 
         self.SetShortCut() 
 
@@ -333,6 +336,20 @@ class MainWindow(wx.Frame):
             return lstImages
         except :
             return lstImages
+
+    def getConnectedCams(self):
+
+        max_tested = 10
+        for i in range(max_tested):
+            try:
+                temp_camera = cv2.VideoCapture(i)
+                if temp_camera.isOpened():
+                    temp_camera.release()
+                    continue
+            except:
+                continue
+            
+            return i             
 
 
 if __name__ == '__main__':
