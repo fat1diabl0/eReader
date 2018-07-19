@@ -254,11 +254,7 @@ class ImportPanel( wx.Panel ):
             
             if dlg.ShowModal() == wx.ID_OK:
                 fullPath = dlg.GetPath()
-                # print(fullPath)
-
                 wildcardIndex = dlg.GetFilterIndex()
-
-                # print(wildcardIndex)
 
                 if wildcardIndex == 0 or wildcardIndex == 1:
                     with open(fullPath, 'w' ) as f:
@@ -269,22 +265,25 @@ class ImportPanel( wx.Panel ):
                     
             dlg.Destroy()
 
-            # dlg = ExportDialog( self, html, txt )
-            # dlg.CentreOnScreen( )
-            # dlg.Fit( )
-            # dlg.ShowModal( )
-
     #put here the code for button "Navigate Text"
     def NavigateText( self, evt ):
         if self.IsShown():
             dlg = NavigateDialog(self)
             dlg.Show()
 
-    #put here the code for button "Set Timer"
     def Settings( self, evt ):
+        if self.parent_frame.cameraPanel.IsShown():
+            self.parent_frame.cameraPanel.state = self.parent_frame.cameraPanel.STATE_CLOSING
+            self.parent_frame.cameraPanel.objWebCamFeed.release()
+            
+        SettingsData.noOfCam = self.parent_frame.getConnectedCams()
+
         dlg = SettingsDialog(self)
         dlg.ShowModal()
 
+        if self.parent_frame.cameraPanel.IsShown():
+            self.parent_frame.cameraPanel.state = self.parent_frame.cameraPanel.STATE_RUNNING
+            self.parent_frame.cameraPanel.StartLiveWebcamFeed()
 
     def onBookmarkShortCut(self,evt):
         if self.IsShown():
@@ -304,4 +303,3 @@ class ImportPanel( wx.Panel ):
         self.html_widget.DeleteSelection()
         self.parent_frame.dictImgOCR[self.activeButton] = self.html_widget.GetPageText( )
         # print(self.html_widget.GetPageText( ))
-

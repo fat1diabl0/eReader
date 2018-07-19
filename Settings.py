@@ -71,17 +71,18 @@ class SettingsDialog ( wx.Dialog ):
 
 		choScannerChoices = []
 		
-		self.noOfCam = self.getConnectedCams()
-		# print(self.noOfCam)
-		if self.noOfCam  > 1:
+		if SettingsData.noOfCam  > 1:
 			choScannerChoices.append("USB Cam")
 			choScannerChoices.append("Web Cam")
 		else:
 			choScannerChoices.append("Web Cam")
 			
 		self.choScanner = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choScannerChoices, 0 )
-		if self.noOfCam > 1:
-			self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
+		if SettingsData.noOfCam > 1:
+			if SettingsData.camID == 0:
+				self.choScanner.SetStringSelection("USB Cam")
+			else:	
+				self.choScanner.SetStringSelection("Web Cam")
 		else:
 			self.choScanner.SetStringSelection("Web Cam")
 			

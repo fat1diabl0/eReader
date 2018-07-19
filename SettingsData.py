@@ -7,6 +7,8 @@ Default_FontColor = wx.BLACK
 Default_IsSaveImages = "No"
 Default_OCRMethod = "OmniPage"
 
+noOfCam = 1
+camID = 0
 PreferredScanner = "USB Cam"
 Font = "Helvetica"
 FontSize = 24
