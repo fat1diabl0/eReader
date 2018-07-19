@@ -4,6 +4,7 @@ import wx, os
 import cv2
 import time
 import threading
+from multiprocessing import Process
 import LandingScreen
 from models import WebcamFeed
 from ImportScreen import *
@@ -77,33 +78,7 @@ class CameraPanel( wx.Panel ):
             font.SetPointSize( 15 )
             btn_txt.SetFont( font )
             left_sizer.Add( btn_txt, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10 )
-        self.SetSizer( main_sizer )
-        self.Layout( )
 
-    def StartLiveWebcamFeed( self ):
-        self.noOfCam = self.getConnectedCams()
-        print("From StartLiveWebcamFeed " + str(self.noOfCam))
-        if self.noOfCam == 1:
-            camId = 0
-        elif self.noOfCam > 1:
-            if SettingsData.PreferredScanner == "USB Cam":
-                camId = 0
-            elif SettingsData.PreferredScanner == "Web Cam":
-                camId = 1
-        else:
-            camId = 0
-
-        
-        self.objWebCamFeed = WebcamFeed(camId)
-        if not self.objWebCamFeed.has_webcam():
-            print ('Webcam has not been detected.')
-            self.Close()           
-
-        """ Creates a 30 fps timer for the update loop """
-        self.timer = wx.Timer(self)
-        self.timer.Start(1000./30.)
-        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
-        self.updating = False
         
         """ Bind custom paint events """
         self.m_panelVideo.Bind(wx.EVT_ERASE_BACKGROUND, self.onEraseBackground)              
@@ -114,10 +89,39 @@ class CameraPanel( wx.Panel ):
         self.STATE_CLOSING = 2
         self.state = self.STATE_RUNNING   
 
+        self.SetSizer( main_sizer )
+        self.Layout( )
+
+    def StartLiveWebcamFeed( self ):      
+        print(SettingsData.PreferredScanner)
+        print(SettingsData.noOfCam)
+        
+        if SettingsData.noOfCam > 1:
+            if SettingsData.PreferredScanner == "USB Cam":
+                SettingsData.camID = 0
+            elif SettingsData.PreferredScanner == "Web Cam":
+                SettingsData.camID = 1
+        elif SettingsData.noOfCam == 1:
+            SettingsData.PreferredScanner == "Web Cam"
+            SettingsData.camID = 0
+
+        print(SettingsData.camID)
+        
+        self.objWebCamFeed = WebcamFeed(SettingsData.camID)
+        if not self.objWebCamFeed.has_webcam():
+            print ('Webcam has not been detected.')
+            self.Close()           
+
+        """ Creates a 30 fps timer for the update loop """
+        self.timer = wx.Timer(self)
+        self.timer.Start(1000./30.)
+        self.Bind(wx.EVT_TIMER, self.onUpdate, self.timer)
+             
+
     """ Main Update loop that calls the Paint function """
-    def onUpdate(self, event):
+    def onUpdate(self,event):
         if self.state == self.STATE_RUNNING:
-            self.m_panelVideo.Refresh()
+            self.m_panelVideo.Refresh()            
     
     """ Retrieves a new webcam image and paints it onto the frame """
     def onPaint(self, event):
@@ -185,21 +189,24 @@ class CameraPanel( wx.Panel ):
         self.parent_frame.Layout()
 
     def getConnectedCams(self):
-        # print("101")
         max_tested = 10
         for i in range(max_tested):
             try:
-                # print(i)
-                temp_camera = cv2.VideoCapture(i)
-                # print(i)
-                if temp_camera.isOpened():
-                    temp_camera.release()
-                    continue
+                if self.IsShown():
+                    if i != SettingsData.camID:
+                        temp_camera = cv2.VideoCapture(i)
+                        if temp_camera.isOpened():
+                            temp_camera.release()
+                            continue
+                else:
+                    temp_camera = cv2.VideoCapture(i)
+                    if temp_camera.isOpened():
+                        temp_camera.release()
+                        continue
             except:
                 continue
             
             return i 
-        # print("102")
 
     def GetAllImageFiles(self):
 
