@@ -88,7 +88,6 @@ class BookmarkDialog ( wx.Dialog ):
 					self.ImportScreen.dictBookmarkData[strBMName] = (strPageName,strSelectedText)
 					self.ImportScreen.html_widget.ClearSelection()
 
-
 					strPageSource = self.ImportScreen.html_widget.GetPageSource()
 					# print(strPageSource.encode("utf-8"))
 
