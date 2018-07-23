@@ -16,7 +16,6 @@ except ImportError: # if it's not there locally, try the wxPython lib.
 
 class ImportPanel( wx.Panel ):
     def __init__( self, parent):
-        # wx.Dialog.__init__(self, par, -1, 'Envision Reader', style = wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER | wx.MAXIMIZE_BOX | wx.MINIMIZE_BOX  )
         wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.DefaultSize, style = wx.TAB_TRAVERSAL )        
         
         self.parent_frame = parent
@@ -144,7 +143,7 @@ class ImportPanel( wx.Panel ):
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
-        # print("onFindShortCut")
+        print("onFindShortCut")
         if self.IsShown():
             self.findData = wx.FindReplaceData() 
             dlg = wx.FindReplaceDialog(self, self.findData, "Find & Replace", wx.FR_REPLACEDIALOG)
@@ -256,7 +255,10 @@ class ImportPanel( wx.Panel ):
                 fullPath = dlg.GetPath()
                 wildcardIndex = dlg.GetFilterIndex()
 
-                if wildcardIndex == 0 or wildcardIndex == 1:
+                if wildcardIndex == 0:
+                    with open(fullPath, 'w' ) as f:
+                        f.write(pageText)   
+                elif wildcardIndex == 1:
                     with open(fullPath, 'w' ) as f:
                         f.write(html)   
                 elif wildcardIndex == 2:
@@ -303,3 +305,4 @@ class ImportPanel( wx.Panel ):
         self.html_widget.DeleteSelection()
         self.parent_frame.dictImgOCR[self.activeButton] = self.html_widget.GetPageText( )
         # print(self.html_widget.GetPageText( ))
+
