@@ -198,7 +198,7 @@ class MainWindow(wx.Frame):
         # if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
         self.dictImgOCR = OrderedDict()
 
-        img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg |PDF Files (*.PDF) | *.PDF"
+        img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg; |PDF Files (*.PDF) | *.PDF"
         image_dlg = wx.FileDialog(self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
         
         if image_dlg.ShowModal() == wx.ID_OK:
