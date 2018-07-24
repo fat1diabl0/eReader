@@ -55,10 +55,20 @@ class MainWindow(wx.Frame):
                 lines = f.readlines()
                 for l in lines:
                     fields = l.split(':')
-                    if fields[0] == "OCRMethod":
-                        SettingsData.OCRMethod = fields[1].strip()              
-                    elif fields[0] == "PreferredScanner":
-                        SettingsData.PreferredScanner = fields[1].strip()                        
+                    if fields[0] == "PreferredScanner":
+                        SettingsData.PreferredScanner = fields[1].strip()
+                    elif fields[0] == "Font":
+                        SettingsData.Font = fields[1].strip()
+                    elif fields[0] == "FontSize":
+                        SettingsData.FontSize = fields[1].strip()
+                    elif fields[0] == "FontColor":
+                        c = wx.Colour(int(fields[1].strip()))
+                        SettingsData.FontColor = c
+                    elif fields[0] == "IsSaveImages":
+                        SettingsData.IsSaveImages = fields[1].strip()
+                    elif fields[0] == "OCRMethod":
+                        SettingsData.OCRMethod = fields[1].strip()      
+                       
 
         SettingsData.noOfCam = self.getConnectedCams()
         self.cameraPanel.StartLiveWebcamFeed()
