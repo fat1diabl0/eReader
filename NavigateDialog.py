@@ -222,14 +222,16 @@ class NavigateDialog ( wx.Dialog ):
 
 	def OnBMDelete( self, event ):
 		intSelectedIndex = self.lstBoxBookmark.GetSelection()
-		
-		if intSelectedIndex > 0:
-			strBMName  = self.lstBoxBookmark.GetString(intSelectedIndex)
-			del self.ImportScreen.dictBookmarkData[strBMName]
 
+		if intSelectedIndex >= 0:
+			strBMName  = self.lstBoxBookmark.GetString(intSelectedIndex)
+			
+			del self.ImportScreen.dictBookmarkData[strBMName]
+			
 			self.lstBoxBookmark.Clear()
 			lstBoxBookmarkChoices = list(self.ImportScreen.dictBookmarkData.keys())
-			self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)			
+			if len(lstBoxBookmarkChoices) > 0:
+				self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)			
 	
 	def OnBMDeleteAll( self, event ):
 		self.ImportScreen.dictBookmarkData.clear()
