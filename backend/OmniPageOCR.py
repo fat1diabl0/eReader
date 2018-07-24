@@ -10,7 +10,13 @@ except:
 def GetOCRByOmniPage(strInput):
 	obj = client.CreateObject(api.Engine)
 	obj.Init()
+	
 	doc = obj.Documents.Add()
+	
+	doc.Deskew = 4
+	doc.AutoZoning_Form = True
+	doc.AutoZoning_Column = 2	
+
 	z = doc.LoadImage(strInput)
 	
 	strOutput = os.path.join(os.getcwd(),"output.txt")
