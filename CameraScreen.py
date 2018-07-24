@@ -148,7 +148,7 @@ class CameraPanel( wx.Panel ):
             if not os.path.exists(workDir):
                 os.makedirs(workDir)        
             
-            imgName = str(GetNewImageName()) + ".png"
+            imgName = str(GetNewImageName()) + ".jpg"
 
             imgPath = os.path.join(workDir,imgName)
             cv2.imwrite(imgPath,img)
