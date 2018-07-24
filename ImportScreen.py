@@ -287,6 +287,10 @@ class ImportPanel( wx.Panel ):
             self.parent_frame.cameraPanel.state = self.parent_frame.cameraPanel.STATE_RUNNING
             self.parent_frame.cameraPanel.StartLiveWebcamFeed()
 
+        if self.IsShown():
+            self.UpdateHTMLPage(self.activeButton)
+
+
     def onBookmarkShortCut(self,evt):
         if self.IsShown():
             BMDialog = BookmarkDialog(self)
