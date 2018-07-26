@@ -29,6 +29,11 @@ class ImportPanel( wx.Panel ):
         #Dictionery for storing Bookmark data
         self.dictHeadingsData = {}
 
+        # self.kbState = wx.KeyboardState()
+        self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyCharHook)
+        # self.Bind(wx.EVT_KEY_DOWN, self.OnUpdateCtrlState)
+        # self.ctrl_down = False
+
         self.BuildInterface( )
         self.Layout()
 
@@ -46,6 +51,10 @@ class ImportPanel( wx.Panel ):
         self.html_widget = wx.html2.WebView.New( self.html_panel, style = wx.BORDER_NONE )
         self.html_widget.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
         self.html_widget.SetEditable(True)
+
+        # self.html_widget.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
+        # self.html_widget.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
+
         html_panel_sizer.Add( self.html_widget, 1, wx.EXPAND )
         self.html_panel.SetSizer( html_panel_sizer )
 
@@ -100,6 +109,24 @@ class ImportPanel( wx.Panel ):
         self.SetSizer( main_sizer )
         self.Layout( )
 
+    def OnKeyCharHook(self, event):
+        keyCode = event.GetKeyCode()
+        # print(keyCode)
+        # print(event.ControlDown())
+        if event.ControlDown():
+            if event.GetKeyCode() == 70:
+                self.onFindShortCut(event)
+            elif event.GetKeyCode() == 66:
+                self.onBookmarkShortCut(event)
+        else:
+            event.Skip()
+
+
+    # def OnUpdateCtrlState(self, event):
+    #     self.ctrl_down = event.ControlDown()
+    #     print(self.ctrl_down)
+    #     event.Skip()
+
     def LoadHTMLPage(self):
         self.html_widget.SetPage( '', '' )        
         self.html_pager_sizer.Clear(True)
@@ -143,7 +170,7 @@ class ImportPanel( wx.Panel ):
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
-        print("onFindShortCut")
+        # print("onFindShortCut")
         if self.IsShown():
             self.findData = wx.FindReplaceData() 
             dlg = wx.FindReplaceDialog(self, self.findData, "Find & Replace", wx.FR_REPLACEDIALOG)
@@ -262,8 +289,8 @@ class ImportPanel( wx.Panel ):
                     with open(fullPath, 'w' ) as f:
                         f.write(html)   
                 elif wildcardIndex == 2:
-                    html = re.sub( '<body.+?>','<body style="font-size:20px;">', pageText, 1, re.IGNORECASE  )
-                    pdfkit.from_string(html, fullPath)
+                    print(fullPath)
+                    pdfkit.from_string(pageText, fullPath)
                     
             dlg.Destroy()
 
