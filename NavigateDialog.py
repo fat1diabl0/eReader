@@ -193,7 +193,10 @@ class NavigateDialog ( wx.Dialog ):
 		strBMText = self.ImportScreen.dictBookmarkData[strBMName][1]
 
 		self.ImportScreen.UpdateHTMLPage(strPageName)
-	
+
+		self.ImportScreen.html_widget.Find(strBMText,flags=wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT)
+
+
 	def OnBMPrevious( self, event ):
 		intSelectedIndex = self.lstBoxBookmark.GetSelection()
 
@@ -206,6 +209,8 @@ class NavigateDialog ( wx.Dialog ):
 			strBMText = self.ImportScreen.dictBookmarkData[strBMName][1]
 
 			self.ImportScreen.UpdateHTMLPage(strPageName)
+
+			self.ImportScreen.html_widget.Find(strBMText,flags=wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT)
 	
 	def OnBMNext( self, event ):
 		intSelectedIndex = self.lstBoxBookmark.GetSelection()
@@ -220,6 +225,8 @@ class NavigateDialog ( wx.Dialog ):
 
 			self.ImportScreen.UpdateHTMLPage(strPageName)
 
+			self.ImportScreen.html_widget.Find(strBMText,flags=wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT)
+
 	def OnBMDelete( self, event ):
 		intSelectedIndex = self.lstBoxBookmark.GetSelection()
 
@@ -231,7 +238,8 @@ class NavigateDialog ( wx.Dialog ):
 			self.lstBoxBookmark.Clear()
 			lstBoxBookmarkChoices = list(self.ImportScreen.dictBookmarkData.keys())
 			if len(lstBoxBookmarkChoices) > 0:
-				self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)			
+				self.lstBoxBookmark.InsertItems(lstBoxBookmarkChoices,0)
+				self.lstBoxBookmark.SetSelection(0)			
 	
 	def OnBMDeleteAll( self, event ):
 		self.ImportScreen.dictBookmarkData.clear()
