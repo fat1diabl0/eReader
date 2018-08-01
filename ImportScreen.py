@@ -289,8 +289,10 @@ class ImportPanel( wx.Panel ):
                     with open(fullPath, 'w' ) as f:
                         f.write(html)   
                 elif wildcardIndex == 2:
-                    print(fullPath)
-                    pdfkit.from_string(pageText, fullPath)
+                    # print(fullPath)
+                    exe_path = os.path.join(os.getcwd(),"bin\\wkhtmltopdf.exe")
+                    config = pdfkit.configuration(wkhtmltopdf=exe_path)
+                    pdfkit.from_string(pageText, fullPath,configuration = config)
                     
             dlg.Destroy()
 
