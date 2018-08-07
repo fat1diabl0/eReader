@@ -12,6 +12,7 @@ import SettingsData
 import PyPDF2
 import threading
 from Shortcuts import clsShortCuts
+import device
 
 
 class MainWindow(wx.Frame):
@@ -187,8 +188,11 @@ class MainWindow(wx.Frame):
 
         deleteID = wx.NewId()
         self.Bind(wx.EVT_MENU, self.importPanel.DeleteText, id=deleteID)                
+
+        backID = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.onBack, id=backID)         
                         
-        entries = [wx.AcceleratorEntry() for i in range(10)]
+        entries = [wx.AcceleratorEntry() for i in range(11)]
 
         entries[0].Set(SettingsData.ctrlKey, ord(SettingsData.Import), importID)
         entries[1].Set(SettingsData.ctrlKey, ord(SettingsData.FindReplace), findID)
@@ -200,6 +204,7 @@ class MainWindow(wx.Frame):
         entries[7].Set(SettingsData.ctrlKey, ord(SettingsData.Export), exportID)
         entries[8].Set(SettingsData.ctrlKey, ord(SettingsData.Navigation), navigationID)
         entries[9].Set(SettingsData.normalKey, SettingsData.Delete, deleteID)
+        entries[10].Set(SettingsData.ctrlKey, SettingsData.Back, backID)
 
         accel = wx.AcceleratorTable(entries)
         self.SetAcceleratorTable(accel)        
@@ -268,6 +273,16 @@ class MainWindow(wx.Frame):
             self.Layout()
         
         image_dlg.Destroy()            
+
+    def onBack(self,evt):
+        # print("onBack")
+        if self.cameraPanel.IsShown():
+            self.cameraPanel.onBack(evt)
+        elif self.importPanel.IsShown():
+            self.importPanel.OnBack(evt)
+        else:
+            pass
+
 
     def GetAllImageFiles(self):
 
@@ -348,6 +363,10 @@ class MainWindow(wx.Frame):
             return lstImages
 
     def getConnectedCams(self):
+        # print(device)
+        # self.camersList  = device.getDeviceList()
+        # print(self.camersList)
+        # return len(self.camersList)
 
         max_tested = 10
         for i in range(max_tested):

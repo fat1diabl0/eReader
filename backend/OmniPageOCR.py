@@ -21,6 +21,9 @@ def GetOCRByOmniPage(strInput):
 	
 	strOutput = os.path.join(os.getcwd(),"output.txt")
 	z.ConvertToDirectTXT(strOutput,0)
+	
+	strOutputXML = os.path.join(os.getcwd(),"Omnipage_XML_Output.xml")
+	z.ConvertToDirectTXT(strOutputXML,4)
 
 	strText = ""
 	if os.path.exists(strOutput):
