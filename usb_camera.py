@@ -1,3 +1,4 @@
+import comtypes
 import comtypes.client
 try:
     comtypes.client.GetModule(r'C:\Users\20050093\Desktop\Test\pyPlayer-master\tlb\\DirectShow.tlb')
@@ -20,3 +21,9 @@ except ValueError:
 
 qi = moniker.QueryInterface(comtypes.gen.DirectShowLib.IPropertyBag)
 
+vtValue = comtypes.automation.VARIANT()
+vtValue.vt = comtypes.automation.VT_BSTR
+
+qi.Read("FriendlyName",comtypes.addressof(vtValue),None)
+
+print(vtValue.value)
