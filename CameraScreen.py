@@ -159,7 +159,7 @@ class CameraPanel( wx.Panel ):
             imgPath = os.path.join(workDir,imgName)
             cv2.imwrite(imgPath,img)
 
-            s = wx.adv.Sound("Camera Shutter Sound.wav")
+            s = wx.adv .Sound("Camera Shutter Sound.wav")
             s.Play()
         
     #put here the code for button "Done"
@@ -171,6 +171,10 @@ class CameraPanel( wx.Panel ):
                     t.cancel()
                     break   
             
+
+            s = wx.adv.Sound("Waiting.wav")
+            t = threading.Thread(target=s.Play(),name="Waiting")
+
             self.objWebCamFeed.release()                                    
             # self.EndModal(1)  
 
@@ -183,6 +187,12 @@ class CameraPanel( wx.Panel ):
             self.parent_frame.importPanel.Show()
             self.parent_frame.importPanel.LoadHTMLPage()
             self.parent_frame.Layout()
+
+            lstThread = threading.enumerate()
+            for t in lstThread:
+                if t.name == "Waiting":
+                    t.cancel()
+                    break              
 
     #put here the code for button "Set Timer"
     def SetTimer( self, evt ):
