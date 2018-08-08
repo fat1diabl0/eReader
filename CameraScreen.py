@@ -15,6 +15,7 @@ import shutil
 import SettingsData
 import PyPDF2
 from PIL import Image
+import wx.adv
 
 class CameraPanel( wx.Panel ):
     def __init__( self, parent ):
@@ -93,12 +94,17 @@ class CameraPanel( wx.Panel ):
         self.Layout( )
 
     def StartLiveWebcamFeed( self ):      
-        print(SettingsData.PreferredScanner)
-        print(SettingsData.noOfCam)
-        
+        # print(SettingsData.PreferredScanner)
+        # print(SettingsData.noOfCam)
+        # print(self.parent_frame.camersList)
         if SettingsData.noOfCam > 1:
             if SettingsData.PreferredScanner == "USB Cam":
                 SettingsData.camID = 0
+
+                # for i in range(len(self.parent_frame.camersList)):
+                #     if "USB" in self.parent_frame.camersList[i]:
+                #         SettingsData.camID = i
+                #         break
             elif SettingsData.PreferredScanner == "Web Cam":
                 SettingsData.camID = 1
         elif SettingsData.noOfCam == 1:
@@ -152,6 +158,9 @@ class CameraPanel( wx.Panel ):
 
             imgPath = os.path.join(workDir,imgName)
             cv2.imwrite(imgPath,img)
+
+            s = wx.adv.Sound("Camera Shutter Sound.wav")
+            s.Play()
         
     #put here the code for button "Done"
     def Done( self, evt ):
@@ -215,7 +224,7 @@ class CameraPanel( wx.Panel ):
         workDir = os.path.join(os.getcwd(),"pics")
 
         if os.path.exists(workDir):
-            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.jpg')]
 
             if(len(lstAllPNGFiles) > 0):
                 
@@ -339,10 +348,13 @@ class TimerDialog( wx.Dialog ):
         if not os.path.exists(workDir):
             os.makedirs(workDir)        
         
-        imgName = str(GetNewImageName()) + ".png"
+        imgName = str(GetNewImageName()) + ".jpg"
         
         imgPath = os.path.join(workDir,imgName)
         cv2.imwrite(imgPath,img)   
+
+        s = wx.adv.Sound("Camera Shutter Sound.wav")
+        s.Play()        
 
         t = threading.Timer(t,self.capture,[t])
         t.name = "TimerThread"
@@ -353,7 +365,7 @@ class TimerDialog( wx.Dialog ):
 def GetNewImageName():
     workDir = os.path.join(os.getcwd(),"pics")
 
-    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.jpg')]
 
     lstFiles = []
     for file in lstAllPNGFiles:
