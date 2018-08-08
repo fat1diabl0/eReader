@@ -217,6 +217,9 @@ class MainWindow(wx.Frame):
         image_dlg = wx.FileDialog(self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
         
         if image_dlg.ShowModal() == wx.ID_OK:
+
+            s = wx.adv.Sound("Waiting.wav")
+            t = threading.Thread(target=s.Play(),name="Waiting")
             
             lstSelectedFiles = image_dlg.GetPaths()
 
@@ -273,6 +276,12 @@ class MainWindow(wx.Frame):
             self.Layout()
         
         image_dlg.Destroy()            
+
+        lstThread = threading.enumerate()
+        for t in lstThread:
+            if t.name == "Waiting":
+                t.cancel()
+                break           
 
     def onBack(self,evt):
         # print("onBack")
