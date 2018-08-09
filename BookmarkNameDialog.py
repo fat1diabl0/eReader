@@ -56,6 +56,22 @@ class BookmarkDialog ( wx.Dialog ):
 		# Connect Events
 		self.btnBMNameCancel.Bind( wx.EVT_BUTTON, self.OnBMNameCancel )
 		self.btnBMNameOk.Bind( wx.EVT_BUTTON, self.OnBMNameOK )
+
+		self.strGetIndexJSScript = "if (window.getSelection) {\
+    						var sel = window.getSelection();\
+    						var div = document.getElementById(""content"");\
+    				if (sel.rangeCount) { \
+				        var range = sel.getRangeAt(0); \
+			        if (range.commonAncestorContainer == div.firstChild) { \
+				            var precedingRange = document.createRange(); \
+            				precedingRange.setStartBefore(div.firstChild); \
+            				precedingRange.setEnd(range.startContainer, range.startOffset); \
+			            var textPrecedingSelection = precedingRange.toString(); \
+            			var wordIndex = textPrecedingSelection.split(/\s+/).length; \
+            		alert(""Word index: "" + wordIndex); \
+        			} \
+    			} \
+			}"
 	
 	def __del__( self ):
 		pass
@@ -85,6 +101,8 @@ class BookmarkDialog ( wx.Dialog ):
 				if(len(strSelectedText) == 0):
 					wx.MessageBox("Please select any text to bookmark.")
 				else:
+					self.ImportScreen.html_widget.RunScript(self.strGetIndexJSScript)
+
 					self.ImportScreen.dictBookmarkData[strBMName] = (strPageName,strSelectedText)
 					self.ImportScreen.html_widget.ClearSelection()
 
