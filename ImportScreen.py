@@ -29,10 +29,7 @@ class ImportPanel( wx.Panel ):
         #Dictionery for storing Bookmark data
         self.dictHeadingsData = {}
 
-        # self.kbState = wx.KeyboardState()
         self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyCharHook)
-        # self.Bind(wx.EVT_KEY_DOWN, self.OnUpdateCtrlState)
-        # self.ctrl_down = False
 
         self.BuildInterface( )
         self.Layout()
@@ -51,9 +48,6 @@ class ImportPanel( wx.Panel ):
         self.html_widget = wx.html2.WebView.New( self.html_panel, style = wx.BORDER_NONE )
         self.html_widget.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
         self.html_widget.SetEditable(True)
-
-        # self.html_widget.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
-        # self.html_widget.Bind(wx.EVT_KEY_DOWN, self.OnKeyDown)
 
         html_panel_sizer.Add( self.html_widget, 1, wx.EXPAND )
         self.html_panel.SetSizer( html_panel_sizer )
@@ -111,21 +105,17 @@ class ImportPanel( wx.Panel ):
 
     def OnKeyCharHook(self, event):
         keyCode = event.GetKeyCode()
-        # print(keyCode)
-        # print(event.ControlDown())
+
         if event.ControlDown():
             if event.GetKeyCode() == 70:
                 self.onFindShortCut(event)
             elif event.GetKeyCode() == 66:
                 self.onBookmarkShortCut(event)
+            elif event.GetKeyCode() == 72:
+                self.NavigateText(event)                
         else:
             event.Skip()
 
-
-    # def OnUpdateCtrlState(self, event):
-    #     self.ctrl_down = event.ControlDown()
-    #     print(self.ctrl_down)
-    #     event.Skip()
 
     def LoadHTMLPage(self):
         self.html_widget.SetPage( '', '' )        
@@ -165,8 +155,7 @@ class ImportPanel( wx.Panel ):
         # print(strData)
         c = SettingsData.FontColor.Get(includeAlpha=False)
         color = "rgb(" + str(c[0]) +',' + str(c[1]) +',' + str(c[2]) +')' 
-        # html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + self.parent_frame.dictImgOCR[btnName] +' </p></body></html>'
-        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><p> ' + strData +' </p></body></html>'
+        html = '<html><body style="background-color: rgb( 224, 224, 224 );font-family:'+SettingsData.Font+';font-size:'+str(SettingsData.FontSize)+'px;color:'+ color +'"><div id="content"><p> ' + strData +' </p></div></body></html>'
         self.html_widget.SetPage( html, '' )        
 
     def onFindShortCut(self,evt):
@@ -195,7 +184,7 @@ class ImportPanel( wx.Panel ):
         elif intFlags == 7:
             flagToSet = wx.html2.WEBVIEW_FIND_HIGHLIGHT_RESULT | wx.html2.WEBVIEW_FIND_ENTIRE_WORD | wx.html2.WEBVIEW_FIND_MATCH_CASE
 
-        self.html_widget.Find(strFind,flags=flagToSet)
+        print(self.html_widget.Find(strFind,flags=flagToSet))
 
     def onReplace(self, evt):
         strFind = (self.findData.GetFindString()).strip()
@@ -337,5 +326,3 @@ class ImportPanel( wx.Panel ):
     def DeleteText(self,evt):
         self.html_widget.DeleteSelection()
         self.parent_frame.dictImgOCR[self.activeButton] = self.html_widget.GetPageText( )
-        # print(self.html_widget.GetPageText( ))
-
