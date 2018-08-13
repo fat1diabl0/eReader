@@ -57,21 +57,24 @@ class BookmarkDialog ( wx.Dialog ):
 		self.btnBMNameCancel.Bind( wx.EVT_BUTTON, self.OnBMNameCancel )
 		self.btnBMNameOk.Bind( wx.EVT_BUTTON, self.OnBMNameOK )
 
-		self.strGetIndexJSScript = "if (window.getSelection) {\
-    						var sel = window.getSelection();\
-    						var div = document.getElementById(""content"");\
-    				if (sel.rangeCount) { \
-				        var range = sel.getRangeAt(0); \
-			        if (range.commonAncestorContainer == div.firstChild) { \
-				            var precedingRange = document.createRange(); \
-            				precedingRange.setStartBefore(div.firstChild); \
-            				precedingRange.setEnd(range.startContainer, range.startOffset); \
-			            var textPrecedingSelection = precedingRange.toString(); \
-            			var wordIndex = textPrecedingSelection.split(/\s+/).length; \
-            		alert(""Word index: "" + wordIndex); \
-        			} \
-    			} \
-			}"
+		# This is to run JS to get the index of selected word
+		# self.strGetIndexJSScript = "var sel = document.getSelection();\
+  #   						var div = document.getElementById(""content"");\
+  #   				if (sel.rangeCount) { \
+		# 		        var range = sel.getRangeAt(0); \
+		# 	        if (range.commonAncestorContainer == div.firstChild) { \
+		# 		            var precedingRange = document.createRange(); \
+  #           				precedingRange.setStartBefore(div.firstChild); \
+  #           				precedingRange.setEnd(range.startContainer, range.startOffset); \
+		# 	            var textPrecedingSelection = precedingRange.toString(); \
+  #           			var wordIndex = textPrecedingSelection.split(/\s+/).length; \
+  #           		alert(""Word index: "" + wordIndex); \
+		# 			var txtFile = new File(""F:/Upwork/Projects/Camera Tool/eReader-master/temp.txt"");\
+		# 			txtFile.open(""w""); \
+		# 			txtFile.writeln(wordIndex);\
+		# 			txtFile.close();\
+  #   			} \
+		# 	}"
 	
 	def __del__( self ):
 		pass
@@ -101,7 +104,8 @@ class BookmarkDialog ( wx.Dialog ):
 				if(len(strSelectedText) == 0):
 					wx.MessageBox("Please select any text to bookmark.")
 				else:
-					self.ImportScreen.html_widget.RunScript(self.strGetIndexJSScript)
+					# This is to run JS to get the index of selected word
+					# self.ImportScreen.html_widget.RunScript(self.strGetIndexJSScript)
 
 					self.ImportScreen.dictBookmarkData[strBMName] = (strPageName,strSelectedText)
 					self.ImportScreen.html_widget.ClearSelection()
@@ -121,7 +125,6 @@ class BookmarkDialog ( wx.Dialog ):
 					else:
 						strReplace = r"<p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p>"
 
-					# strReplace = r"<p aria-label="+strBMName+" role=navigation> "+strSelectedText+" </p>"
 					result = str.replace(strPageSource,strSelectedText,strReplace,1)
 					# print(result.encode("utf-8"))
 					self.ImportScreen.parent_frame.dictImgOCR[strPageName] = result
@@ -133,5 +136,3 @@ class BookmarkDialog ( wx.Dialog ):
 					
 		else:
 			wx.MessageBox("Please enter bookmark Name.")
-	
-
