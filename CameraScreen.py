@@ -94,25 +94,15 @@ class CameraPanel( wx.Panel ):
         self.Layout( )
 
     def StartLiveWebcamFeed( self ):      
-        # print(SettingsData.PreferredScanner)
-        # print(SettingsData.noOfCam)
-        # print(self.parent_frame.camersList)
         if SettingsData.noOfCam > 1:
             if SettingsData.PreferredScanner == "USB Cam":
                 SettingsData.camID = 0
-
-                # for i in range(len(self.parent_frame.camersList)):
-                #     if "USB" in self.parent_frame.camersList[i]:
-                #         SettingsData.camID = i
-                #         break
             elif SettingsData.PreferredScanner == "Web Cam":
                 SettingsData.camID = 1
         elif SettingsData.noOfCam == 1:
             SettingsData.PreferredScanner == "Web Cam"
             SettingsData.camID = 0
 
-        print(SettingsData.camID)
-        
         self.objWebCamFeed = WebcamFeed(SettingsData.camID)
         if not self.objWebCamFeed.has_webcam():
             print ('Webcam has not been detected.')
@@ -170,13 +160,11 @@ class CameraPanel( wx.Panel ):
                 if t.name == "TimerThread":
                     t.cancel()
                     break   
-            
 
             s = wx.adv.Sound("Waiting.wav")
             t = threading.Thread(target=s.Play(),name="Waiting")
 
             self.objWebCamFeed.release()                                    
-            # self.EndModal(1)  
 
             self.parent_frame.dictImgOCR = OrderedDict()
             self.parent_frame.dictImgOCR = self.GetAllImageFiles()
