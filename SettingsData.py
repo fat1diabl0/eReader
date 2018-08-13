@@ -33,3 +33,4 @@ Bookmarks = 'B'
 Navigation = 'H'
 SettingsDialog = 'X'
 Delete = wx.WXK_DELETE
+Back = wx.WXK_BACK
