@@ -12,7 +12,13 @@ import SettingsData
 import PyPDF2
 import threading
 from Shortcuts import clsShortCuts
-import device
+from ctypes import POINTER
+# from camera import device
+# import comtypes.client
+# try:
+#     comtypes.client.GetModule(os.path.join(os.getcwd(),"tlb\\DirectShow.tlb"))
+# except:
+#     print("Direct Show Library Not Found.")
 
 
 class MainWindow(wx.Frame):
@@ -281,10 +287,11 @@ class MainWindow(wx.Frame):
         for t in lstThread:
             if t.name == "Waiting":
                 t.cancel()
+                t1 = threading.Thread(target=s.Stop(),name="Waiting")
+                t1.cancel()
                 break           
 
     def onBack(self,evt):
-        # print("onBack")
         if self.cameraPanel.IsShown():
             self.cameraPanel.onBack(evt)
         elif self.importPanel.IsShown():
@@ -372,10 +379,35 @@ class MainWindow(wx.Frame):
             return lstImages
 
     def getConnectedCams(self):
+        #To get connected USB Cams using C++/Python wrapper method
         # print(device)
         # self.camersList  = device.getDeviceList()
         # print(self.camersList)
         # return len(self.camersList)
+
+        #To get connected USB Cams using comtypes method
+        # CLSID_SystemDeviceEnum = comtypes.GUID('{62BE5D10-60EB-11d0-BD3B-00A0C911CE86}')
+        # CLSID_VideoInputDeviceCategory = comtypes.GUID("{860BB310-5D01-11d0-BD3B-00A0C911CE86}")
+
+        # createDevEnum = comtypes.client.CreateObject(CLSID_SystemDeviceEnum,clsctx=comtypes.CLSCTX_INPROC_SERVER,interface=comtypes.gen.DirectShowLib.ICreateDevEnum)
+        # ##print(type(createDevEnum))
+
+        # enumMoniker  = createDevEnum.CreateClassEnumerator(CLSID_VideoInputDeviceCategory,0)
+        # ##print(type(enumMoniker))
+
+        # lstMoniker = []
+        # while True:
+        #     try:
+        #         (moniker, fetched) = enumMoniker.RemoteNext(1)
+        #         if fetched == 0:
+        #             break
+        #         else:
+        #             lstMoniker.append(moniker)
+        #     except:
+        #         break
+
+        # # print(len(lstMoniker))
+        # return len(lstMoniker)
 
         max_tested = 10
         for i in range(max_tested):
