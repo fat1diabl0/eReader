@@ -15,6 +15,7 @@ import shutil
 import SettingsData
 import PyPDF2
 from PIL import Image
+import wx.adv
 
 class CameraPanel( wx.Panel ):
     def __init__( self, parent ):
@@ -93,9 +94,6 @@ class CameraPanel( wx.Panel ):
         self.Layout( )
 
     def StartLiveWebcamFeed( self ):      
-        print(SettingsData.PreferredScanner)
-        print(SettingsData.noOfCam)
-        
         if SettingsData.noOfCam > 1:
             if SettingsData.PreferredScanner == "USB Cam":
                 SettingsData.camID = 0
@@ -105,8 +103,6 @@ class CameraPanel( wx.Panel ):
             SettingsData.PreferredScanner == "Web Cam"
             SettingsData.camID = 0
 
-        print(SettingsData.camID)
-        
         self.objWebCamFeed = WebcamFeed(SettingsData.camID)
         if not self.objWebCamFeed.has_webcam():
             print ('Webcam has not been detected.')
@@ -152,6 +148,9 @@ class CameraPanel( wx.Panel ):
 
             imgPath = os.path.join(workDir,imgName)
             cv2.imwrite(imgPath,img)
+
+            s = wx.adv .Sound("Camera Shutter Sound.wav")
+            s.Play()
         
     #put here the code for button "Done"
     def Done( self, evt ):
@@ -161,9 +160,11 @@ class CameraPanel( wx.Panel ):
                 if t.name == "TimerThread":
                     t.cancel()
                     break   
-            
+
+            s = wx.adv.Sound("Waiting.wav")
+            t = threading.Thread(target=s.Play(),name="Waiting")
+
             self.objWebCamFeed.release()                                    
-            # self.EndModal(1)  
 
             self.parent_frame.dictImgOCR = OrderedDict()
             self.parent_frame.dictImgOCR = self.GetAllImageFiles()
@@ -174,6 +175,12 @@ class CameraPanel( wx.Panel ):
             self.parent_frame.importPanel.Show()
             self.parent_frame.importPanel.LoadHTMLPage()
             self.parent_frame.Layout()
+
+            lstThread = threading.enumerate()
+            for t in lstThread:
+                if t.name == "Waiting":
+                    t.cancel()
+                    break              
 
     #put here the code for button "Set Timer"
     def SetTimer( self, evt ):
@@ -215,7 +222,7 @@ class CameraPanel( wx.Panel ):
         workDir = os.path.join(os.getcwd(),"pics")
 
         if os.path.exists(workDir):
-            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.jpg')]
 
             if(len(lstAllPNGFiles) > 0):
                 
@@ -339,10 +346,13 @@ class TimerDialog( wx.Dialog ):
         if not os.path.exists(workDir):
             os.makedirs(workDir)        
         
-        imgName = str(GetNewImageName()) + ".png"
+        imgName = str(GetNewImageName()) + ".jpg"
         
         imgPath = os.path.join(workDir,imgName)
         cv2.imwrite(imgPath,img)   
+
+        s = wx.adv.Sound("Camera Shutter Sound.wav")
+        s.Play()        
 
         t = threading.Timer(t,self.capture,[t])
         t.name = "TimerThread"
@@ -353,7 +363,7 @@ class TimerDialog( wx.Dialog ):
 def GetNewImageName():
     workDir = os.path.join(os.getcwd(),"pics")
 
-    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.png')]
+    lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.jpg')]
 
     lstFiles = []
     for file in lstAllPNGFiles:
