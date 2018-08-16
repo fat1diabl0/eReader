@@ -105,7 +105,7 @@ class ImportPanel( wx.Panel ):
 
     def OnKeyCharHook(self, event):
         keyCode = event.GetKeyCode()
-
+        # print(keyCode)
         if event.ControlDown():
             if event.GetKeyCode() == 70:
                 self.onFindShortCut(event)
@@ -113,6 +113,10 @@ class ImportPanel( wx.Panel ):
                 self.onBookmarkShortCut(event)
             elif event.GetKeyCode() == 72:
                 self.NavigateText(event)                
+            elif event.GetKeyCode() == 83:
+                self.ExportText(event)                
+            elif event.GetKeyCode() == 8:
+                self.OnBack(event)
         else:
             event.Skip()
 
@@ -318,10 +322,16 @@ class ImportPanel( wx.Panel ):
         self.dictBookmarkData.clear()
         self.dictHeadingsData.clear()
         self.Hide()
-        if self.parent_frame.cameraPanel.IsShown():
-            self.parent_frame.cameraPanel.Hide()
-        self.parent_frame.landingPanel.Show()
+        
+        self.parent_frame.cameraPanel.Show()
         self.parent_frame.Layout()
+
+        self.parent_frame.cameraPanel.StartLiveWebcamFeed()         
+        
+        # if self.parent_frame.cameraPanel.IsShown():
+        #     self.parent_frame.cameraPanel.Hide()
+        # self.parent_frame.landingPanel.Show()
+        # self.parent_frame.Layout()
 
     def DeleteText(self,evt):
         self.html_widget.DeleteSelection()
