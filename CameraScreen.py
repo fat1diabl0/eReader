@@ -94,14 +94,19 @@ class CameraPanel( wx.Panel ):
         self.Layout( )
 
     def StartLiveWebcamFeed( self ):      
-        if SettingsData.noOfCam > 1:
-            if SettingsData.PreferredScanner == "USB Cam":
-                SettingsData.camID = 0
-            elif SettingsData.PreferredScanner == "Web Cam":
-                SettingsData.camID = 1
-        elif SettingsData.noOfCam == 1:
-            SettingsData.PreferredScanner == "Web Cam"
-            SettingsData.camID = 0
+
+        for i in range(len(SettingsData.lstOfCam)):
+            if SettingsData.PreferredScanner in SettingsData.lstOfCam[i]:
+                SettingsData.camID = i
+
+        # if SettingsData.noOfCam > 1:
+        #     if SettingsData.PreferredScanner == "USB Camera":
+        #         SettingsData.camID = 0
+        #     elif SettingsData.PreferredScanner == "Web Cam":
+        #         SettingsData.camID = 1
+        # elif SettingsData.noOfCam == 1:
+        #     SettingsData.PreferredScanner == "Web Cam"
+        #     SettingsData.camID = 0
 
         self.objWebCamFeed = WebcamFeed(SettingsData.camID)
         if not self.objWebCamFeed.has_webcam():
@@ -194,26 +199,6 @@ class CameraPanel( wx.Panel ):
         self.Hide()
         self.parent_frame.landingPanel.Show()
         self.parent_frame.Layout()
-
-    def getConnectedCams(self):
-        max_tested = 10
-        for i in range(max_tested):
-            try:
-                if self.IsShown():
-                    if i != SettingsData.camID:
-                        temp_camera = cv2.VideoCapture(i)
-                        if temp_camera.isOpened():
-                            temp_camera.release()
-                            continue
-                else:
-                    temp_camera = cv2.VideoCapture(i)
-                    if temp_camera.isOpened():
-                        temp_camera.release()
-                        continue
-            except:
-                continue
-            
-            return i 
 
     def GetAllImageFiles(self):
 
