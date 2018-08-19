@@ -71,20 +71,36 @@ class SettingsDialog ( wx.Dialog ):
 
 		choScannerChoices = []
 		
-		if SettingsData.noOfCam  > 1:
-			choScannerChoices.append("USB Cam")
-			choScannerChoices.append("Web Cam")
-		else:
-			choScannerChoices.append("Web Cam")
-			
+		# if SettingsData.noOfCam  > 1:
+		# 	choScannerChoices.append("USB Cam")
+		# 	choScannerChoices.append("Web Cam")
+		# else:
+		# 	choScannerChoices.append("Web Cam")
+
+		for i in range(len(SettingsData.lstOfCam)):
+			choScannerChoices.append(SettingsData.lstOfCam[i])
+
 		self.choScanner = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choScannerChoices, 0 )
-		if SettingsData.noOfCam > 1:
-			if SettingsData.camID == 0:
-				self.choScanner.SetStringSelection("USB Cam")
-			else:	
-				self.choScanner.SetStringSelection("Web Cam")
-		else:
-			self.choScanner.SetStringSelection("Web Cam")
+
+		IsFound = False
+		for i in range(len(SettingsData.lstOfCam)):
+			if SettingsData.PreferredScanner in SettingsData.lstOfCam[i]:
+				self.choScanner.SetStringSelection(SettingsData.lstOfCam[i])
+				SettingsData.camID = i
+				IsFound = True
+
+		if not IsFound:
+			if len(SettingsData.lstOfCam) == 1:
+				self.choScanner.SetStringSelection(SettingsData.lstOfCam[0])
+				SettingsData.camID = 0
+		
+		# if SettingsData.noOfCam > 1:
+		# 	if SettingsData.camID == 0:
+		# 		self.choScanner.SetStringSelection("USB Cam")
+		# 	else:	
+		# 		self.choScanner.SetStringSelection("Web Cam")
+		# else:
+		# 	self.choScanner.SetStringSelection("Web Cam")
 			
 		self.choScanner.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
 		
