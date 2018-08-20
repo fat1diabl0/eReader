@@ -1,6 +1,6 @@
 import wx
 
-Default_PreferredScanner = "USB Cam"
+Default_PreferredScanner = "USB Camera"
 Default_Font = "Helvetica"
 Default_FontSize = 24
 Default_FontColor = wx.BLACK
@@ -8,8 +8,9 @@ Default_IsSaveImages = "No"
 Default_OCRMethod = "OmniPage"
 
 noOfCam = 1
+lstOfCam = []
 camID = 0
-PreferredScanner = "USB Cam"
+PreferredScanner = "USB Camera"
 Font = "Helvetica"
 FontSize = 24
 FontColor = wx.BLACK

@@ -14,11 +14,11 @@ import threading
 from Shortcuts import clsShortCuts
 from ctypes import POINTER
 # from camera import device
-# import comtypes.client
-# try:
-#     comtypes.client.GetModule(os.path.join(os.getcwd(),"tlb\\DirectShow.tlb"))
-# except:
-#     print("Direct Show Library Not Found.")
+import comtypes.client
+try:
+    comtypes.client.GetModule(os.path.join(os.getcwd(),"tlb\\DirectShow.tlb"))
+except:
+    print("Direct Show Library Not Found.")
 
 
 class MainWindow(wx.Frame):
@@ -78,6 +78,7 @@ class MainWindow(wx.Frame):
                        
 
         SettingsData.noOfCam = self.getConnectedCams()
+        # print(SettingsData.lstOfCam)
         self.cameraPanel.StartLiveWebcamFeed()
 
         self.SetShortCut() 
@@ -385,41 +386,55 @@ class MainWindow(wx.Frame):
         # print(self.camersList)
         # return len(self.camersList)
 
-        #To get connected USB Cams using comtypes method
-        # CLSID_SystemDeviceEnum = comtypes.GUID('{62BE5D10-60EB-11d0-BD3B-00A0C911CE86}')
-        # CLSID_VideoInputDeviceCategory = comtypes.GUID("{860BB310-5D01-11d0-BD3B-00A0C911CE86}")
+        # To get connected USB Cams using comtypes method
+        CLSID_SystemDeviceEnum = comtypes.GUID('{62BE5D10-60EB-11d0-BD3B-00A0C911CE86}')
+        CLSID_VideoInputDeviceCategory = comtypes.GUID("{860BB310-5D01-11d0-BD3B-00A0C911CE86}")
 
-        # createDevEnum = comtypes.client.CreateObject(CLSID_SystemDeviceEnum,clsctx=comtypes.CLSCTX_INPROC_SERVER,interface=comtypes.gen.DirectShowLib.ICreateDevEnum)
-        # ##print(type(createDevEnum))
+        createDevEnum = comtypes.client.CreateObject(CLSID_SystemDeviceEnum,clsctx=comtypes.CLSCTX_INPROC_SERVER,interface=comtypes.gen.DirectShowLib.ICreateDevEnum)
+        ##print(type(createDevEnum))
 
-        # enumMoniker  = createDevEnum.CreateClassEnumerator(CLSID_VideoInputDeviceCategory,0)
-        # ##print(type(enumMoniker))
+        enumMoniker  = createDevEnum.CreateClassEnumerator(CLSID_VideoInputDeviceCategory,0)
+        ##print(type(enumMoniker))
 
-        # lstMoniker = []
-        # while True:
-        #     try:
-        #         (moniker, fetched) = enumMoniker.RemoteNext(1)
-        #         if fetched == 0:
-        #             break
-        #         else:
-        #             lstMoniker.append(moniker)
-        #     except:
-        #         break
-
-        # # print(len(lstMoniker))
-        # return len(lstMoniker)
-
-        max_tested = 10
-        for i in range(max_tested):
+        lstMoniker = []
+        while True:
             try:
-                temp_camera = cv2.VideoCapture(i)
-                if temp_camera.isOpened():
-                    temp_camera.release()
-                    continue
+                (moniker, fetched) = enumMoniker.RemoteNext(1)
+                if fetched == 0:
+                    break
+                else:
+                    lstMoniker.append(moniker)
             except:
-                continue
+                break
+
+        SettingsData.lstOfCam = []
+
+        for m in lstMoniker:
+            null_context = POINTER(comtypes.gen.DirectShowLib.IBindCtx)()
+            null_moniker = POINTER(comtypes.gen.DirectShowLib.IMoniker)()
+
+            propBag = m.QueryInterface(comtypes.gen.DirectShowLib.IPropertyBag)
+            source = m.RemoteBindToStorage(null_context,null_moniker,propBag._iid_)
+
+            vtValue = comtypes.automation.VARIANT()
+            vtValue.vt = comtypes.automation.VT_BSTR
+
+            SettingsData.lstOfCam.append(propBag.Read("FriendlyName",vtValue,0))
+
+        # print(len(lstMoniker))
+        return len(lstMoniker)
+
+        # max_tested = 10
+        # for i in range(max_tested):
+        #     try:
+        #         temp_camera = cv2.VideoCapture(i)
+        #         if temp_camera.isOpened():
+        #             temp_camera.release()
+        #             continue
+        #     except:
+        #         continue
             
-            return i             
+        #     return i             
 
 
 if __name__ == '__main__':
