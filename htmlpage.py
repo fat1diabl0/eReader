@@ -6,8 +6,10 @@ import re
 class bookmarkData():
   def __init__(self):
     self.bmName = ""
-    self.bmWord = ""
-    self.highlightHTML = ""
+    self.bmText = ""
+    self.index = -1
+    self.replaceHTML = ""
+    
 
 class MyFrame1 ( wx.Frame ):
   def __init__( self, parent ):
@@ -76,22 +78,26 @@ class MyFrame1 ( wx.Frame ):
     selected_text = self.html_widget.GetSelectedText().strip()
     index = self.GetIndex(selected_text)
 
-    strPageSource = self.html_widget.GetPageText()
-    strReplace = r"<p aria-label="+selected_text+" role=navigation> <span style=""background-color:#FFFF00>"+selected_text+"</span> </p>"
-    
-##    result = str.replace(strPageSource,selected_text,strReplace,1)
-    result =  strPageSource[:index] + strReplace + strPageSource[index+len(selected_text):]
-    print(result)    
     obj = bookmarkData()
     obj.bmName = selected_text
-    obj.bmWord = selected_text
-    html = '<html><body><p>'+result+'</p></body></html>'
-    obj.highlightHTML = html
+    obj.bmText = selected_text
+    obj.index = index
+    obj.replaceHTML = r"<p aria-label="+selected_text+" role=navigation>"+selected_text+"</span> </p>"
 
     self.lstBookmarks.append(obj)
+
+  def UpdateHTML(self):
+    strPageText = self.html_widget.GetPageText()
+
+    for b in self.lstBookmarks:
+##      strReplace = r"<p aria-label="+selected_text+" role=navigation> <span style=""background-color:#FFFF00>"+selected_text+"</span> </p>"
+      strReplace = r"<p aria-label="+selected_text+" role=navigation>"+selected_text+"</span> </p>"
+    
+      result =  strPageText[:index] + strReplace + strPageText[index+len(selected_text):]
     
 
   def GoToBookmark(self,event):
+    
     self.html_widget.SetPage( self.lstBookmarks[0].highlightHTML,'' )
 ##    for i in range(len(self.lstBookmarks)):
 ##      print(self.lstBookmarks[i].bmName)
