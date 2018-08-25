@@ -74,11 +74,6 @@ class LandingPanel( wx.Panel ):
         btn_import_sizer.Add( btn_import_text, 0, wx.TOP | wx.ALIGN_CENTER, 5 )
         hsizer.Add( btn_import_sizer, 0, wx.ALL , 30)
 
-        # self.gauge_sizer = wx.BoxSizer( wx.VERTICAL )
-        # self.gauge = wx.Gauge(panel, range = 100, size = (400, 25), style = wx.GA_HORIZONTAL)
-        # self.gauge_sizer.Add( self.gauge, 0, wx.ALL|wx.ALIGN_CENTRE , 5 )        
-        # vsizer.Add( self.gauge_sizer, 0, wx.ALL | wx.ALIGN_CENTRE, 30)
-
         #hsizer.Add( btn_import, 0, wx.ALL , 30 )
 
         hsizer.AddStretchSpacer(1)
