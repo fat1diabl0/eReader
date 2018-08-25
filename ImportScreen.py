@@ -25,7 +25,7 @@ class ImportPanel( wx.Panel ):
 
         #Dictionery for storing Bookmark data
         self.dictBookmarkData = {}
-        
+
         #Dictionery for storing Bookmark data
         self.dictHeadingsData = {}
 
@@ -316,9 +316,13 @@ class ImportPanel( wx.Panel ):
     def onBookmarkShortCut(self,evt):
         if self.IsShown():
             BMDialog = BookmarkDialog(self)
-            BMDialog.Show()
+            BMDialog.ShowModal()
 
     def OnBack( self, evt ):
+        workDir = os.path.join(os.getcwd(),"pics")
+        for file in os.scandir(workDir):
+            os.unlink(file.path)                
+
         self.dictBookmarkData.clear()
         self.dictHeadingsData.clear()
         self.Hide()
