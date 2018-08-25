@@ -16,6 +16,7 @@ import SettingsData
 import PyPDF2
 from PIL import Image
 import wx.adv
+import glob
 
 class CameraPanel( wx.Panel ):
     def __init__( self, parent ):
@@ -166,6 +167,17 @@ class CameraPanel( wx.Panel ):
                     t.cancel()
                     break   
 
+            
+            workDir = os.path.join(os.getcwd(),"pics")
+            if not os.path.exists(workDir):
+                wx.MessageBox("Please Capture atleast one pic.")
+                return
+
+            lstAllPNGFiles = [file for file in os.listdir(workDir) if file.endswith('.jpg')]
+            if(len(lstAllPNGFiles) == 0):
+                wx.MessageBox("Please Capture atleast one pic.")  
+                return
+
             s = wx.adv.Sound("Waiting.wav")
             t = threading.Thread(target=s.Play(),name="Waiting")
 
@@ -195,7 +207,11 @@ class CameraPanel( wx.Panel ):
         	
     def onBack( self, evt ):
         self.objWebCamFeed.release() 
-                   
+
+        workDir = os.path.join(os.getcwd(),"pics")
+        for file in os.scandir(workDir):
+            os.unlink(file.path)                
+
         self.Hide()
         self.parent_frame.landingPanel.Show()
         self.parent_frame.Layout()
@@ -225,7 +241,9 @@ class CameraPanel( wx.Panel ):
 
 
             if SettingsData.IsSaveImages == "No":
-                shutil.rmtree(workDir)
+                # shutil.rmtree(workDir)
+                for file in os.scandir(workDir):
+                    os.unlink(file.path)                
 
         return d
 
