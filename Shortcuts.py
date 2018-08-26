@@ -17,7 +17,7 @@ import wx.xrc
 class clsShortCuts ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Shortcuts", pos = wx.DefaultPosition, size = wx.Size( 255,280 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Shortcuts", pos = wx.DefaultPosition, size = wx.Size( 255,320 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		
@@ -70,6 +70,10 @@ class clsShortCuts ( wx.Dialog ):
 		self.m_staticText19.SetFont( wx.Font( 10, 74, 90, 90, False, "Helvetica" ) )
 		bSizer5.Add( self.m_staticText19, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
+		self.m_staticText20 = wx.StaticText( self, wx.ID_ANY, u"Back Button", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText20.Wrap( -1 )
+		self.m_staticText20.SetFont( wx.Font( 10, 74, 90, 90, False, "Helvetica" ) )
+		bSizer5.Add( self.m_staticText20, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
 		bSizer2.Add( bSizer5, 1, wx.EXPAND, 5 )
 		
@@ -120,6 +124,10 @@ class clsShortCuts ( wx.Dialog ):
 		self.m_staticText26.SetFont( wx.Font( 10, 74, 90, 90, False, "Helvetica" ) )
 		bSizer6.Add( self.m_staticText26, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
+		self.m_staticText27 = wx.StaticText( self, wx.ID_ANY, u"CTRL + BACKSPACE", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText27.Wrap( -1 )
+		self.m_staticText27.SetFont( wx.Font( 10, 74, 90, 90, False, "Helvetica" ) )
+		bSizer6.Add( self.m_staticText27, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
 		bSizer2.Add( bSizer6, 1, wx.EXPAND, 5 )
 

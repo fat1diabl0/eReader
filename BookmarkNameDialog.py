@@ -40,6 +40,7 @@ class BookmarkDialog ( wx.Dialog ):
 		bSizer3.Add( self.btnBMNameCancel, 0, wx.ALL, 5 )
 		
 		self.btnBMNameOk = wx.Button( self, wx.ID_ANY, u"Ok", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.btnBMNameOk.SetFocus()
 		bSizer3.Add( self.btnBMNameOk, 0, wx.ALL, 5 )
 		
 		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)

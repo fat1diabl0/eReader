@@ -166,6 +166,7 @@ class SettingsDialog ( wx.Dialog ):
 		self.btnSave = wx.Button( self, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.btnSave.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		self.btnSave.Bind( wx.EVT_BUTTON, self.onSave )
+		self.btnSave.SetFocus()
 		
 		bSizer11.Add( self.btnSave, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.RIGHT, 5 )
 		
