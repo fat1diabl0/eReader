@@ -40,7 +40,11 @@ class MyFrame1 ( wx.Frame ):
 
     self.m_button4 = wx.Button( self, wx.ID_ANY, u"Go To Bookmark", wx.DefaultPosition, wx.DefaultSize, 0 )
     right_sizer.Add( self.m_button4, 0, wx.ALL, 5 )
-    self.m_button4.Bind( wx.EVT_BUTTON, self.GoToBookmark )    
+    self.m_button4.Bind( wx.EVT_BUTTON, self.GoToBookmark )
+
+    self.m_button5 = wx.Button( self, wx.ID_ANY, u"Clear Bookmark", wx.DefaultPosition, wx.DefaultSize, 0 )
+    right_sizer.Add( self.m_button5, 0, wx.ALL, 5 )
+    self.m_button5.Bind( wx.EVT_BUTTON, self.ClearBookMark )     
     
     self.SetSizer( right_sizer )
     self.Layout()
@@ -53,9 +57,14 @@ class MyFrame1 ( wx.Frame ):
     pass
 
   def GetIndex(self,selected_text):
+##    print(self.html_widget.GetPageText())
+##    print(self.html_widget.GetPageSource())
+    
     before_page_text = self.html_widget.GetPageText()
+    print(before_page_text)
     self.html_widget.Cut()
     after_page_text = self.html_widget.GetPageText()
+    print(after_page_text)
 
     html = '<html><body><p>Make the selected text red on the yellow background</p></body></html>'
     self.html_widget.SetPage( html, '' )
@@ -82,23 +91,44 @@ class MyFrame1 ( wx.Frame ):
     obj.bmName = selected_text
     obj.bmText = selected_text
     obj.index = index
-    obj.replaceHTML = r"<p aria-label="+selected_text+" role=navigation>"+selected_text+"</span> </p>"
+    obj.replaceHTML = r"<p aria-label="+selected_text+" role=navigation>"+selected_text+"</p>"
 
-    self.lstBookmarks.append(obj)
+    pos = -1
+
+    for i in range(len(self.lstBookmarks)):
+      if self.lstBookmarks[i].index < obj.index:
+        pos = i
+        continue
+      else:
+        break
+
+    self.lstBookmarks.insert(pos+1,obj)
+    self.UpdateHTML()
 
   def UpdateHTML(self):
     strPageText = self.html_widget.GetPageText()
 
-    for b in self.lstBookmarks:
-##      strReplace = r"<p aria-label="+selected_text+" role=navigation> <span style=""background-color:#FFFF00>"+selected_text+"</span> </p>"
-      strReplace = r"<p aria-label="+selected_text+" role=navigation>"+selected_text+"</span> </p>"
-    
-      result =  strPageText[:index] + strReplace + strPageText[index+len(selected_text):]
+    for i in reversed(range(len(self.lstBookmarks))):
+      selected_text = self.lstBookmarks[i].bmText
+      index = self.lstBookmarks[i].index
+
+      result =  strPageText[:index] + self.lstBookmarks[i].replaceHTML + strPageText[index+len(selected_text):]
+
+      strPageText = result
+##      print(strPageText)
+
+    html = '<html><body><p>' + strPageText +'</p></body></html>'
+    self.html_widget.SetPage( html, '' )      
     
 
-  def GoToBookmark(self,event):
+  def ClearBookMark(self,event):
+    self.lstBookmarks.clear()
     
-    self.html_widget.SetPage( self.lstBookmarks[0].highlightHTML,'' )
+  def GoToBookmark(self,event):
+    for i in range(len(self.lstBookmarks)):
+      print(self.lstBookmarks[i].index)
+    
+##    self.html_widget.SetPage( self.lstBookmarks[0].highlightHTML,'' )
 ##    for i in range(len(self.lstBookmarks)):
 ##      print(self.lstBookmarks[i].bmName)
 ##      print(self.lstBookmarks[i].bmWord)

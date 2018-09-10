@@ -41,12 +41,12 @@ class LandingPanel( wx.Panel ):
 
         img = wx.Image( os.path.join( os.getcwd( ), 'Assets', 'Camera Icon.png' ), wx.BITMAP_TYPE_PNG )
         bmp = img.ConvertToBitmap( )
-        btn_camera = wx.BitmapButton( panel, -1, bmp, style=wx.NO_BORDER )
-        btn_camera.Bind( wx.EVT_BUTTON, self.OnCameraBtnClick )
-        btn_camera.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
+        self.btn_camera = wx.BitmapButton( panel, -1, bmp, style=wx.NO_BORDER )
+        self.btn_camera.Bind( wx.EVT_BUTTON, self.OnCameraBtnClick )
+        self.btn_camera.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
         # hsizer.Add( btn_camera, 0, wx.ALL , 30 )
         btn_camera_sizer = wx.BoxSizer( wx.VERTICAL )
-        btn_camera_sizer.Add( btn_camera )
+        btn_camera_sizer.Add( self.btn_camera )
 
         btn_camera_text = wx.StaticText( self, -1, 'CAMERA' )
         btn_camera_text.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )

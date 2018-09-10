@@ -56,10 +56,28 @@ class CameraPanel( wx.Panel ):
         panel.SetSizer( back_btn_sizer )
         left_sizer.Add( panel, 0, wx.EXPAND )
 
+        #image button
+        img1 = wx.Image( os.path.join( self.parent_frame.icons_folder, 'Add Photo Icon.png' ), wx.BITMAP_TYPE_PNG )
+        bmp1 = img1.ConvertToBitmap( )
+        self.btnTakePhoto = wx.BitmapButton( self, -1, bmp1, style=wx.NO_BORDER )
+        self.btnTakePhoto.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
+        self.btnTakePhoto.SetBackgroundColour( wx.BLACK )
+        self.btnTakePhoto.Bind( wx.EVT_BUTTON, self.TakePhoto )
+        left_sizer.Add( self.btnTakePhoto, 0, wx.TOP | wx.ALIGN_CENTER, 60 )
+
+        #label button
+        btn_txt = wx.StaticText( self, -1, 'TAKE PHOTO' )
+        btn_txt.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
+        btn_txt.SetForegroundColour( wx.WHITE )
+        font = btn_txt.GetFont( )
+        font.SetPointSize( 15 )
+        btn_txt.SetFont( font )
+        left_sizer.Add( btn_txt, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10 )
+
         buttons = [
-            [ 'Add Photo Icon.png', 'TAKE PHOTO', self.TakePhoto ],
-            [ 'Done Icon.png', 'DONE', self.Done ],
-            [ 'Set Timer Icon.png', 'SET TIMER', self.SetTimer ]
+            # [ 'Add Photo Icon.png', 'TAKE PHOTO', self.TakePhoto],
+            [ 'Done Icon.png', 'DONE', self.Done],
+            [ 'Set Timer Icon.png', 'SET TIMER', self.SetTimer]
         ]
 
         for img_path, label, func in buttons:
@@ -96,18 +114,11 @@ class CameraPanel( wx.Panel ):
 
     def StartLiveWebcamFeed( self ):      
 
+        self.btnTakePhoto.SetFocus()
+
         for i in range(len(SettingsData.lstOfCam)):
             if SettingsData.PreferredScanner in SettingsData.lstOfCam[i]:
                 SettingsData.camID = i
-
-        # if SettingsData.noOfCam > 1:
-        #     if SettingsData.PreferredScanner == "USB Camera":
-        #         SettingsData.camID = 0
-        #     elif SettingsData.PreferredScanner == "Web Cam":
-        #         SettingsData.camID = 1
-        # elif SettingsData.noOfCam == 1:
-        #     SettingsData.PreferredScanner == "Web Cam"
-        #     SettingsData.camID = 0
 
         self.objWebCamFeed = WebcamFeed(SettingsData.camID)
         if not self.objWebCamFeed.has_webcam():
@@ -214,6 +225,7 @@ class CameraPanel( wx.Panel ):
 
         self.Hide()
         self.parent_frame.landingPanel.Show()
+        self.parent_frame.landingPanel.btn_camera.SetFocus()
         self.parent_frame.Layout()
 
     def GetAllImageFiles(self):
