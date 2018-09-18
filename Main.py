@@ -198,8 +198,18 @@ class MainWindow(wx.Frame):
 
         backID = wx.NewId()
         self.Bind(wx.EVT_MENU, self.onBack, id=backID)         
-                        
-        entries = [wx.AcceleratorEntry() for i in range(11)]
+
+        newID = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.importPanel.onNew, id=newID)         
+
+        prevPageID = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.importPanel.onPrevPage, id=prevPageID)         
+
+        nextPageID = wx.NewId()
+        self.Bind(wx.EVT_MENU, self.importPanel.onNextPage, id=nextPageID)         
+
+
+        entries = [wx.AcceleratorEntry() for i in range(14)]
 
         entries[0].Set(SettingsData.ctrlKey, ord(SettingsData.Import), importID)
         entries[1].Set(SettingsData.ctrlKey, ord(SettingsData.FindReplace), findID)
@@ -212,6 +222,9 @@ class MainWindow(wx.Frame):
         entries[8].Set(SettingsData.ctrlKey, ord(SettingsData.Navigation), navigationID)
         entries[9].Set(SettingsData.normalKey, SettingsData.Delete, deleteID)
         entries[10].Set(SettingsData.ctrlKey, SettingsData.Back, backID)
+        entries[11].Set(SettingsData.ctrlKey, ord(SettingsData.New), newID)
+        entries[12].Set(SettingsData.ctrlKey, SettingsData.Left, prevPageID)
+        entries[13].Set(SettingsData.ctrlKey, SettingsData.Right, nextPageID)
 
         accel = wx.AcceleratorTable(entries)
         self.SetAcceleratorTable(accel)        
