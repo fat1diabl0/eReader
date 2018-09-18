@@ -117,6 +117,12 @@ class ImportPanel( wx.Panel ):
                 self.ExportText(event)                
             elif event.GetKeyCode() == 8:
                 self.OnBack(event)
+            elif event.GetKeyCode() == 78:
+                self.onNew(event)                
+            elif event.GetKeyCode() == 314:
+                self.onPrevPage(event)                
+            elif event.GetKeyCode() == 316:
+                self.onNextPage(event)                
         else:
             event.Skip()
 
@@ -319,9 +325,9 @@ class ImportPanel( wx.Panel ):
             BMDialog.ShowModal()
 
     def OnBack( self, evt ):
-        workDir = os.path.join(os.getcwd(),"pics")
-        for file in os.scandir(workDir):
-            os.unlink(file.path)                
+        # workDir = os.path.join(os.getcwd(),"pics")
+        # for file in os.scandir(workDir):
+        #     os.unlink(file.path)                
 
         self.dictBookmarkData.clear()
         self.dictHeadingsData.clear()
@@ -340,3 +346,38 @@ class ImportPanel( wx.Panel ):
     def DeleteText(self,evt):
         self.html_widget.DeleteSelection()
         self.parent_frame.dictImgOCR[self.activeButton] = self.html_widget.GetPageText( )
+
+    def onNew(self,evt):
+        ret = wx.MessageBox("Do you want to delete existing images?",style=wx.YES_NO)
+        if ret == 2:
+            workDir = os.path.join(os.getcwd(),"pics")
+            for file in os.scandir(workDir):
+                os.unlink(file.path)                
+
+
+    def onPrevPage(self,evt):
+        keyList = self.parent_frame.dictImgOCR.keys()
+        for i,v in enumerate(keyList):
+            if v == self.activeButton:
+                if i == 0:
+                    self.activeButton = list(keyList)[len(keyList)-1]
+                else:
+                    self.activeButton = list(keyList)[i-1]
+                break
+
+        # print(self.activeButton)
+        self.UpdateHTMLPage(self.activeButton)
+
+
+    def onNextPage(self,evt):
+        keyList = self.parent_frame.dictImgOCR.keys()
+        for i,v in enumerate(keyList):
+            if v == self.activeButton:
+                if i == len(keyList)-1:
+                    self.activeButton = list(keyList)[0]
+                else:
+                    self.activeButton = list(keyList)[i+1]
+                break
+
+        # print(self.activeButton)
+        self.UpdateHTMLPage(self.activeButton)
