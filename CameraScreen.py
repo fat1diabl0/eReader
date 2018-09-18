@@ -338,8 +338,17 @@ class TimerDialog( wx.Dialog ):
         self.Layout()
         
         self.Centre( wx.BOTH )
+        
+        self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
 
         self.objTimerWebCam = objCam
+
+    def OnKeyUP(self, event):
+        keyCode = event.GetKeyCode()
+        if keyCode == wx.WXK_ESCAPE:
+            self.Close()
+        else:
+            event.Skip()         
 
     def onOK(self, event):
         timerVal = self.m_textCtrl2.GetValue().strip()
