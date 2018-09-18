@@ -35,3 +35,6 @@ Navigation = 'H'
 SettingsDialog = 'X'
 Delete = wx.WXK_DELETE
 Back = wx.WXK_BACK
+New = 'N'
+Left = wx.WXK_LEFT
+Right = wx.WXK_RIGHT
