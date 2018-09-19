@@ -54,6 +54,7 @@ class MainWindow(wx.Frame):
         self.Layout()
         self.Centre(wx.BOTH)   
 
+        self.Bind(wx.EVT_HELP,self.onHelp)
         self.Bind(wx.EVT_CLOSE, self.onClose)    
 
         settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
@@ -139,14 +140,20 @@ class MainWindow(wx.Frame):
         elif menu_id == self.settingsID:
             self.importPanel.Settings(evt)
         elif menu_id == self.manualID:
-            dlg = clsShortCuts(self)
-            dlg.Show()           
+            self.onHelp(evt)
+            # dlg = clsShortCuts(self)
+            # dlg.Show()           
         elif menu_id == wx.ID_HELP:
             wx.MessageBox('Help')
         elif menu_id == self.bookmarkID:
             self.importPanel.onBookmarkShortCut(evt)
         elif menu_id == self.headingID:
-            wx.MessageBox('Headings')         
+            wx.MessageBox('Headings')     
+
+    def onHelp(self,evt):
+        dlg = clsShortCuts(self)
+        dlg.Show()           
+
 
     def onClose(self, evt):
         if self.cameraPanel.IsShown():
