@@ -2,6 +2,7 @@ import wx
 import os
 import random
 import cv2
+import sys
 import CameraScreen
 import LandingScreen
 import ImportScreen
@@ -54,6 +55,7 @@ class MainWindow(wx.Frame):
         self.Layout()
         self.Centre(wx.BOTH)   
 
+        self.Bind(wx.EVT_HELP,self.onHelp)
         self.Bind(wx.EVT_CLOSE, self.onClose)    
 
         settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
@@ -75,13 +77,18 @@ class MainWindow(wx.Frame):
                         SettingsData.IsSaveImages = fields[1].strip()
                     elif fields[0] == "OCRMethod":
                         SettingsData.OCRMethod = fields[1].strip()      
-                       
-
-        SettingsData.noOfCam = self.getConnectedCams()
-        # print(SettingsData.lstOfCam)
-        self.cameraPanel.StartLiveWebcamFeed()
-
+        
+        SettingsData.noOfCam = self.getConnectedCams()               
         self.SetShortCut() 
+
+        noOfArgs = len(sys.argv)
+        # print(noOfArgs)
+        if noOfArgs > 1:
+            lstSelectedFiles = sys.argv[1:]
+            # print(lstSelectedFiles)
+            self.doOCRforImport(lstSelectedFiles)
+        else:
+            self.cameraPanel.StartLiveWebcamFeed()
 
     def CreateMenu(self):
         menu_bar = wx.MenuBar()
@@ -139,14 +146,20 @@ class MainWindow(wx.Frame):
         elif menu_id == self.settingsID:
             self.importPanel.Settings(evt)
         elif menu_id == self.manualID:
-            dlg = clsShortCuts(self)
-            dlg.Show()           
+            self.onHelp(evt)
+            # dlg = clsShortCuts(self)
+            # dlg.Show()           
         elif menu_id == wx.ID_HELP:
             wx.MessageBox('Help')
         elif menu_id == self.bookmarkID:
             self.importPanel.onBookmarkShortCut(evt)
         elif menu_id == self.headingID:
-            wx.MessageBox('Headings')         
+            wx.MessageBox('Headings')     
+
+    def onHelp(self,evt):
+        dlg = clsShortCuts(self)
+        dlg.Show()           
+
 
     def onClose(self, evt):
         if self.cameraPanel.IsShown():
@@ -230,72 +243,149 @@ class MainWindow(wx.Frame):
         self.SetAcceleratorTable(accel)        
 
     def onImport(self, evt):
-        # if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
-        self.dictImgOCR = OrderedDict()
-
         img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg; |PDF Files (*.PDF) | *.PDF"
         image_dlg = wx.FileDialog(self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
         
         if image_dlg.ShowModal() == wx.ID_OK:
-
-            s = wx.adv.Sound("Waiting.wav")
-            t = threading.Thread(target=s.Play(),name="Waiting")
-            
             lstSelectedFiles = image_dlg.GetPaths()
-
-            if SettingsData.OCRMethod == "OmniPage":
-                for f in lstSelectedFiles:
-                    imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
-                    # print(imgOCRText)
-                    imgName = os.path.splitext(os.path.basename(f))[0]
-                    self.dictImgOCR[imgName] = imgOCRText
-                    # print(self.dictImgOCR[imgName])
-            else:
-                lstImages = []
-                fname,fext = os.path.splitext(lstSelectedFiles[0])
-                if fext == '.pdf':
-                    fPath = os.path.dirname(fname)
-                    lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
-                    #print(lstImages)
-                    if lstImages is None:
-                        return
-                else:
-                    lstImages = lstSelectedFiles
-
-                if len(lstImages) > 0:
-                    #perform Google OCR
-                    
-                    for img in lstImages:
-                        imgOCRText = googleOCR.performGoogleOCR(img)
-                        imgName = os.path.splitext(os.path.basename(img))[0]
-                        self.dictImgOCR[imgName] = imgOCRText
-
-                else:
-                    for pdf in lstSelectedFiles:
-                        objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
-                        noOfPages = objPdf.numPages
-                        for page in objPdf.pages: 
-                            pageText = page.extractText()
-                            
-                            while True:
-                                no = random.randint(1,200)
-                                if no not in self.dictImgOCR.keys():
-                                    self.dictImgOCR[str(no)] = pageText
-                                    break
-                                else:
-                                    continue
-
-                
-            if self.cameraPanel.IsShown():
-                self.cameraPanel.Hide()
-            if self.landingPanel.IsShown():
-                self.landingPanel.Hide()
-
-            self.importPanel.Show()
-            self.importPanel.LoadHTMLPage()
-            self.Layout()
+            self.doOCRforImport(lstSelectedFiles)
         
         image_dlg.Destroy()            
+
+
+    # def onImport(self, evt):
+    #     # if self.cameraPanel.IsShown() or self.landingPanel.IsShown():
+    #     self.dictImgOCR = OrderedDict()
+
+    #     img_wildcard = "PNG and JPG files (*.png;*.jpg)|*.png;*.jpg; |PDF Files (*.PDF) | *.PDF"
+    #     image_dlg = wx.FileDialog(self, "Open Image File", wildcard=img_wildcard, style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE)
+        
+    #     if image_dlg.ShowModal() == wx.ID_OK:
+
+    #         s = wx.adv.Sound("Waiting.wav")
+    #         t = threading.Thread(target=s.Play(),name="Waiting")
+            
+    #         lstSelectedFiles = image_dlg.GetPaths()
+
+    #         if SettingsData.OCRMethod == "OmniPage":
+    #             for f in lstSelectedFiles:
+    #                 imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
+    #                 # print(imgOCRText)
+    #                 imgName = os.path.splitext(os.path.basename(f))[0]
+    #                 self.dictImgOCR[imgName] = imgOCRText
+    #                 # print(self.dictImgOCR[imgName])
+    #         else:
+    #             lstImages = []
+    #             fname,fext = os.path.splitext(lstSelectedFiles[0])
+    #             if fext == '.pdf':
+    #                 fPath = os.path.dirname(fname)
+    #                 lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
+    #                 #print(lstImages)
+    #                 if lstImages is None:
+    #                     return
+    #             else:
+    #                 lstImages = lstSelectedFiles
+
+    #             if len(lstImages) > 0:
+    #                 #perform Google OCR
+                    
+    #                 for img in lstImages:
+    #                     imgOCRText = googleOCR.performGoogleOCR(img)
+    #                     imgName = os.path.splitext(os.path.basename(img))[0]
+    #                     self.dictImgOCR[imgName] = imgOCRText
+
+    #             else:
+    #                 for pdf in lstSelectedFiles:
+    #                     objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+    #                     noOfPages = objPdf.numPages
+    #                     for page in objPdf.pages: 
+    #                         pageText = page.extractText()
+                            
+    #                         while True:
+    #                             no = random.randint(1,200)
+    #                             if no not in self.dictImgOCR.keys():
+    #                                 self.dictImgOCR[str(no)] = pageText
+    #                                 break
+    #                             else:
+    #                                 continue
+
+                
+    #         if self.cameraPanel.IsShown():
+    #             self.cameraPanel.Hide()
+    #         if self.landingPanel.IsShown():
+    #             self.landingPanel.Hide()
+
+    #         self.importPanel.Show()
+    #         self.importPanel.LoadHTMLPage()
+    #         self.Layout()
+        
+    #     image_dlg.Destroy()            
+
+    #     lstThread = threading.enumerate()
+    #     for t in lstThread:
+    #         if t.name == "Waiting":
+    #             t.cancel()
+    #             t1 = threading.Thread(target=s.Stop(),name="Waiting")
+    #             t1.cancel()
+    #             break           
+
+    def doOCRforImport(self,lstSelectedFiles):
+        self.dictImgOCR = OrderedDict()
+
+        s = wx.adv.Sound("Waiting.wav")
+        t = threading.Thread(target=s.Play(),name="Waiting")
+            
+        if SettingsData.OCRMethod == "OmniPage":
+            for f in lstSelectedFiles:
+                imgOCRText = OmniPageOCR.GetOCRByOmniPage(f)
+                # print(imgOCRText)
+                imgName = os.path.splitext(os.path.basename(f))[0]
+                self.dictImgOCR[imgName] = imgOCRText
+                # print(self.dictImgOCR[imgName])
+        else:
+            lstImages = []
+            fname,fext = os.path.splitext(lstSelectedFiles[0])
+            if fext == '.pdf':
+                fPath = os.path.dirname(fname)
+                lstImages = self.GetImagesFromPDF(lstSelectedFiles,fPath)
+                #print(lstImages)
+                if lstImages is None:
+                    return
+            else:
+                lstImages = lstSelectedFiles
+
+            if len(lstImages) > 0:
+                #perform Google OCR
+                
+                for img in lstImages:
+                    imgOCRText = googleOCR.performGoogleOCR(img)
+                    imgName = os.path.splitext(os.path.basename(img))[0]
+                    self.dictImgOCR[imgName] = imgOCRText
+
+            else:
+                for pdf in lstSelectedFiles:
+                    objPdf = PyPDF2.PdfFileReader(open(pdf, "rb"))
+                    noOfPages = objPdf.numPages
+                    for page in objPdf.pages: 
+                        pageText = page.extractText()
+                        
+                        while True:
+                            no = random.randint(1,200)
+                            if no not in self.dictImgOCR.keys():
+                                self.dictImgOCR[str(no)] = pageText
+                                break
+                            else:
+                                continue
+
+            
+        if self.cameraPanel.IsShown():
+            self.cameraPanel.Hide()
+        if self.landingPanel.IsShown():
+            self.landingPanel.Hide()
+
+        self.importPanel.Show()
+        self.importPanel.LoadHTMLPage()
+        self.Layout()
 
         lstThread = threading.enumerate()
         for t in lstThread:
