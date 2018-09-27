@@ -66,14 +66,26 @@ class ImportPanel( wx.Panel ):
         back_btn_panel = wx.Panel( self, -1 )
         back_btn_panel.SetBackgroundColour( wx.BLACK )
         back_btn_sizer = wx.BoxSizer( wx.HORIZONTAL )
-        st_txt_back = wx.StaticText( back_btn_panel, -1, 'Back', style = wx.ALIGN_CENTRE_HORIZONTAL )
-        back_btn_panel.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
-        st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
-        st_txt_back.SetForegroundColour( wx.WHITE )
-        font_back = st_txt_back.GetFont( )
-        font_back.SetPointSize( 15 )
-        st_txt_back.SetFont( font_back )
-        back_btn_sizer.Add( st_txt_back, 1, wx.TOP | wx.BOTTOM, 25 )
+
+        # st_txt_back = wx.StaticText( back_btn_panel, -1, 'Back', style = wx.ALIGN_CENTRE_HORIZONTAL )
+        # back_btn_panel.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
+        # st_txt_back.Bind( wx.EVT_LEFT_DOWN, self.OnBack )
+        # st_txt_back.SetForegroundColour( wx.WHITE )
+        # font_back = st_txt_back.GetFont( )
+        # font_back.SetPointSize( 15 )
+        # st_txt_back.SetFont( font_back )
+        # back_btn_sizer.Add( st_txt_back, 1, wx.TOP | wx.BOTTOM, 25 )        
+
+        self.btnBack = wx.Button( back_btn_panel, -1, "Back",style = wx.BORDER_NONE,size=wx.Size(25,50))
+        self.btnBack.SetLabel("Back")
+        font_back = self.btnBack.GetFont()
+        font_back.SetPointSize(15)
+        self.btnBack.SetFont( font_back )
+        self.btnBack.SetBackgroundColour( wx.BLACK )
+        self.btnBack.SetForegroundColour( wx.WHITE )
+        self.btnBack.Bind( wx.EVT_BUTTON, self.OnBack )
+        back_btn_sizer.Add( self.btnBack, 1, wx.TOP | wx.BOTTOM, 25 )
+        
         back_btn_panel.SetSizer( back_btn_sizer )
         left_sizer.Add( back_btn_panel, 0, wx.EXPAND )
 
@@ -88,6 +100,7 @@ class ImportPanel( wx.Panel ):
             img = wx.Image( os.path.join( self.parent_frame.icons_folder, img_path ), wx.BITMAP_TYPE_PNG )
             bmp = img.ConvertToBitmap( )
             btn = wx.BitmapButton( self, -1, bmp, style=wx.NO_BORDER )
+            btn.SetLabel(label)
             btn.SetBackgroundColour( wx.Colour( 79, 79, 79 ) )
             btn.Bind( wx.EVT_BUTTON, func )
             left_sizer.Add( btn, 0, wx.TOP | wx.ALIGN_CENTER, 60 )
@@ -102,6 +115,7 @@ class ImportPanel( wx.Panel ):
             left_sizer.Add( btn_txt, 0, wx.ALIGN_CENTER | wx.BOTTOM, 10 )
         self.SetSizer( main_sizer )
         self.Layout( )
+
 
     def OnKeyCharHook(self, event):
         keyCode = event.GetKeyCode()
