@@ -58,6 +58,8 @@ class BookmarkDialog ( wx.Dialog ):
 		self.btnBMNameCancel.Bind( wx.EVT_BUTTON, self.OnBMNameCancel )
 		self.btnBMNameOk.Bind( wx.EVT_BUTTON, self.OnBMNameOK )
 
+		self.ctrlBMName.SetFocus()
+
 		# This is to run JS to get the index of selected word
 		# self.strGetIndexJSScript = "var sel = document.getSelection();\
   #   						var div = document.getElementById(""content"");\

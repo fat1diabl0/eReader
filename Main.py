@@ -385,7 +385,10 @@ class MainWindow(wx.Frame):
 
         self.importPanel.Show()
         self.importPanel.LoadHTMLPage()
+        self.importPanel.html_widget.SetFocus()
         self.Layout()
+
+        
 
         lstThread = threading.enumerate()
         for t in lstThread:

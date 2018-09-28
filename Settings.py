@@ -209,7 +209,7 @@ class SettingsDialog ( wx.Dialog ):
 		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
 		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
 
-		
+		self.choScanner.SetFocus()
 
 	
 	def __del__( self ):
