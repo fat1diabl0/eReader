@@ -1,15 +1,26 @@
 # -*- coding: utf-8 -*- 
 
-import os
+###########################################################################
+## Python code generated with wxFormBuilder (version Jun 17 2015)
+## http://www.wxformbuilder.org/
+##
+## PLEASE DO "NOT" EDIT THIS FILE!
+###########################################################################
+
 import wx
-import cv2
 import wx.xrc
+import os
+import cv2
 import SettingsData
+
+###########################################################################
+## Class dlgSettings
+###########################################################################
 
 class SettingsDialog ( wx.Dialog ):
 	
 	def __init__( self, parent ):
-		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Envision Reader", pos = wx.DefaultPosition, size = wx.Size( 520,320 ), style = wx.DEFAULT_DIALOG_STYLE )
+		wx.Dialog.__init__ ( self, parent, id = wx.ID_ANY, title = u"Envision Reader", pos = wx.DefaultPosition, size = wx.Size( 520,260 ), style = wx.DEFAULT_DIALOG_STYLE )
 		
 		self.SetSizeHints( wx.DefaultSize, wx.DefaultSize )
 		self.SetBackgroundColour( wx.Colour( 224, 224, 224 ) )
@@ -27,56 +38,31 @@ class SettingsDialog ( wx.Dialog ):
 		
 		bSizer1.Add( bSizer2, 0, wx.EXPAND, 5 )
 		
+		
 		bSizer1.AddStretchSpacer(1)
+		
+		
 		bSizer1.AddStretchSpacer(1)
 		
+		bSizer3 = wx.BoxSizer( wx.VERTICAL )
 		
-		bSizer3 = wx.BoxSizer( wx.HORIZONTAL )
+		bSizer8 = wx.BoxSizer( wx.HORIZONTAL )
 		
-		bSizer8 = wx.BoxSizer( wx.VERTICAL )
+		bSizer111 = wx.BoxSizer( wx.VERTICAL )
 		
 		self.m_staticText3 = wx.StaticText( self, wx.ID_ANY, u"Preferred Scanner:", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.m_staticText3.Wrap( -1 )
 		self.m_staticText3.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
 		
-		bSizer8.Add( self.m_staticText3, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )
+		bSizer111.Add( self.m_staticText3, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		bSizer8.AddStretchSpacer(1)
 		
-		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"Select Font:", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText4.Wrap( -1 )
-		self.m_staticText4.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+		bSizer8.Add( bSizer111, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		bSizer8.Add( self.m_staticText4, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )
-				
-		bSizer8.AddStretchSpacer(1)
+		bSizer121 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.m_staticText7 = wx.StaticText( self, wx.ID_ANY, u"Save Captured Images?", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText7.Wrap( -1 )
-		self.m_staticText7.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-		
-		bSizer8.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT|wx.ALL|wx.BOTTOM, 5 )
-		
-		bSizer8.AddStretchSpacer(1)
-		
-		self.m_staticText5 = wx.StaticText( self, wx.ID_ANY, u"Select OCR Method:", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText5.Wrap( -1 )
-		self.m_staticText5.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-		
-		bSizer8.Add( self.m_staticText5, 0, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )		
-		
-		bSizer3.Add( bSizer8, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.BOTTOM|wx.RIGHT, 5 )
-		
-		bSizer12 = wx.BoxSizer( wx.VERTICAL )
-
 		choScannerChoices = []
 		
-		# if SettingsData.noOfCam  > 1:
-		# 	choScannerChoices.append("USB Cam")
-		# 	choScannerChoices.append("Web Cam")
-		# else:
-		# 	choScannerChoices.append("Web Cam")
-
 		for i in range(len(SettingsData.lstOfCam)):
 			choScannerChoices.append(SettingsData.lstOfCam[i])
 
@@ -93,49 +79,102 @@ class SettingsDialog ( wx.Dialog ):
 			if len(SettingsData.lstOfCam) == 1:
 				self.choScanner.SetStringSelection(SettingsData.lstOfCam[0])
 				SettingsData.camID = 0
-		
-		# if SettingsData.noOfCam > 1:
-		# 	if SettingsData.camID == 0:
-		# 		self.choScanner.SetStringSelection("USB Cam")
-		# 	else:	
-		# 		self.choScanner.SetStringSelection("Web Cam")
-		# else:
-		# 	self.choScanner.SetStringSelection("Web Cam")
-			
+
 		self.choScanner.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
 		
-		bSizer12.Add( self.choScanner, 1, wx.ALL, 1 )
+		bSizer121.Add( self.choScanner, 0, wx.BOTTOM|wx.RIGHT|wx.LEFT|wx.ALIGN_CENTER_VERTICAL, 1 )
 		
-		bSizer12.AddStretchSpacer(1)
-				
+		
+		bSizer8.Add( bSizer121, 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		
+		
+		bSizer3.Add( bSizer8, 1, wx.ALIGN_CENTER_VERTICAL|wx.EXPAND|wx.BOTTOM, 5 )
+		
+		bSizer12 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		zbcSizer = wx.BoxSizer( wx.VERTICAL )
+		
+		self.txtFontLabel = wx.StaticText( self, wx.ID_ANY, u"Select Font:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.txtFontLabel.Wrap( -1 )
+		self.txtFontLabel.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+		
+		zbcSizer.Add( self.txtFontLabel, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		# bSizer111.Add( self.m_staticText3, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer12.Add( zbcSizer, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		bSizer15 = wx.BoxSizer( wx.VERTICAL )
+		
+		# print(SettingsData.FontSize)
+		# self.btnFontPicker = wx.FontPickerCtrl( self, wx.ID_ANY, wx.Font( 24, 70, 90, 90, False, "Helvetica" ), wx.DefaultPosition, wx.Size( 150,-1 ), wx.FNTP_FONTDESC_AS_LABEL )
+		# self.btnFontPicker.SetMaxPointSize( 100 ) 
 		self.btnFontPicker = wx.Button( self, wx.ID_ANY, u"Select Font", wx.DefaultPosition, wx.Size( 150,-1 ), 0 )
 		self.btnFontPicker.Bind( wx.EVT_BUTTON, self.onSelectFont )
-		bSizer12.Add( self.btnFontPicker, 0, wx.BOTTOM, 5 )	
-		self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
+		bSizer15.Add( self.btnFontPicker, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )
+		# self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
 		self.btnFontPicker.SetForegroundColour(SettingsData.FontColor)			
-
-		bSizer12.AddStretchSpacer(1)
 		
-		choSaveImagesChoices = [ u"No", u"Yes"]
+		
+		bSizer12.Add( bSizer15, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer3.Add( bSizer12, 1, wx.ALIGN_CENTER_VERTICAL|wx.LEFT|wx.EXPAND, 5 )
+		
+		bSizer91 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer16 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText7 = wx.StaticText( self, wx.ID_ANY, u"Save Captured Images?", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText7.Wrap( -1 )
+		self.m_staticText7.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
+		
+		bSizer16.Add( self.m_staticText7, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.BOTTOM, 5 )
+		
+		
+		bSizer91.Add( bSizer16, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		bSizer17 = wx.BoxSizer( wx.VERTICAL )
+		
+		choSaveImagesChoices = [ u"No", u"Yes", wx.EmptyString ]
 		self.choSaveImages = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choSaveImagesChoices, 0 )
 		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
 		self.choSaveImages.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
 		
-		bSizer12.Add( self.choSaveImages, 0, wx.ALL, 1 )
+		bSizer17.Add( self.choSaveImages, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 1 )
 		
-		bSizer12.AddStretchSpacer(1)
+		
+		bSizer91.Add( bSizer17, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer3.Add( bSizer91, 1, wx.EXPAND, 5 )
+		
+		bSizer101 = wx.BoxSizer( wx.HORIZONTAL )
+		
+		bSizer18 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.m_staticText6 = wx.StaticText( self, wx.ID_ANY, u"Select OCR Method:", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText6.Wrap( -1 )
+		bSizer18.Add( self.m_staticText6, 0, wx.ALL, 5 )
+		
+		
+		bSizer101.Add( bSizer18, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		bSizer19 = wx.BoxSizer( wx.VERTICAL )
 		
 		choOCRMethodChoices = [ u"OmniPage", u"Google"]
 		self.choOCRMethod = wx.Choice( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( 150,-1 ), choOCRMethodChoices, 0 )
 		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
-		self.choOCRMethod.SetFont( wx.Font( 10, 74, 90, 90, False, "Arial" ) )
-		
-		bSizer12.Add( self.choOCRMethod, 0, wx.ALL, 1 )
-
-		bSizer3.Add( bSizer12, 1, wx.ALIGN_CENTER_VERTICAL|wx.LEFT, 5 )
+		bSizer19.Add( self.choOCRMethod, 0, wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_RIGHT, 5 )
 		
 		
-		bSizer1.Add( bSizer3, 0, wx.EXPAND, 5 )
+		bSizer101.Add( bSizer19, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		bSizer3.Add( bSizer101, 1, wx.EXPAND, 5 )
+		
+		
+		bSizer1.Add( bSizer3, 0, wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
 		
 		bSizer1.AddStretchSpacer(1)
@@ -147,14 +186,18 @@ class SettingsDialog ( wx.Dialog ):
 		self.btnDefault = wx.Button( self, wx.ID_ANY, u"Restore Defaults", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.btnDefault.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		self.btnDefault.Bind( wx.EVT_BUTTON, self.onRestoreDefaults )
-		
+
 		bSizer10.Add( self.btnDefault, 0, wx.ALL, 5 )
+		
 		
 		bSizer9.Add( bSizer10, 0, wx.ALIGN_LEFT|wx.TOP, 5 )
 		
 		bSizer11 = wx.BoxSizer( wx.HORIZONTAL )
 		
+		
 		bSizer11.AddStretchSpacer(1)
+		
+		
 		bSizer11.AddStretchSpacer(1)
 		
 		self.btnCancel = wx.Button( self, wx.ID_ANY, u"Cancel", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -166,7 +209,7 @@ class SettingsDialog ( wx.Dialog ):
 		self.btnSave = wx.Button( self, wx.ID_ANY, u"Save", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.btnSave.SetBackgroundColour( wx.Colour( 255, 255, 255 ) )
 		self.btnSave.Bind( wx.EVT_BUTTON, self.onSave )
-		self.btnSave.SetFocus()
+		# self.btnSave.SetFocus()
 		
 		bSizer11.Add( self.btnSave, 1, wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.RIGHT, 5 )
 		
@@ -177,12 +220,12 @@ class SettingsDialog ( wx.Dialog ):
 		bSizer1.Add( bSizer9, 0, wx.EXPAND, 5 )
 		
 		self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
-
+		
 		self.SetSizer( bSizer1 )
 		self.Layout()
 		
 		self.Centre( wx.BOTH )
-
+		
 		settingsFilePath = os.path.join(os.getcwd(),"Settings.dat")
 		if os.path.exists(settingsFilePath):
 			with open(settingsFilePath,'r') as f:
@@ -203,18 +246,18 @@ class SettingsDialog ( wx.Dialog ):
 					elif fields[0] == "OCRMethod":
 						SettingsData.OCRMethod = fields[1].strip()		
 
+		# print(SettingsData.FontSize)
 		self.choScanner.SetStringSelection( SettingsData.PreferredScanner )
 		self.btnFontPicker.SetLabel(SettingsData.Font + ',' + str(SettingsData.FontSize))
 		self.btnFontPicker.SetForegroundColour(SettingsData.FontColor)
 		self.choSaveImages.SetStringSelection( SettingsData.IsSaveImages )
 		self.choOCRMethod.SetStringSelection( SettingsData.OCRMethod )
 
-		self.choScanner.SetFocus()
+		self.choScanner.SetFocus()	
 
-	
 	def __del__( self ):
 		pass
-
+	
 	def OnKeyUP(self, event):
 		keyCode = event.GetKeyCode()
 		if keyCode == wx.WXK_ESCAPE:
@@ -291,7 +334,5 @@ class SettingsDialog ( wx.Dialog ):
 		self.Destroy()
 
 	def onCancel(self,evt):
-		self.Destroy( )
+		self.Destroy( )	
 
-
-	
