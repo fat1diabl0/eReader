@@ -140,6 +140,14 @@ class ImportPanel( wx.Panel ):
         else:
             event.Skip()
 
+        if keyCode == 27:
+            # print(self.FindFocus().GetName())
+            # print(self.html_widget.HasFocus())
+            # self.html_widget.SetFocus()
+            # print(self.html_widget.HasFocus())
+            self.btnBack.SetFocus()
+            # self.html_panel.SetFocus()
+
 
     def LoadHTMLPage(self):
         self.html_widget.SetPage( '', '' )        
